@@ -26,6 +26,11 @@ public enum ErrorCode {
     RESUME_FILE_TYPE_NOT_SUPPORTED(2006, "不支持的文件类型"),
     RESUME_ANALYSIS_FAILED(2007, "简历分析失败"),
     RESUME_ANALYSIS_NOT_FOUND(2008, "简历分析结果不存在"),
+    RESUME_DOCUMENT_NOT_FOUND(2009, "在线简历不存在"),
+    RESUME_DOCUMENT_VERSION_CONFLICT(2010, "简历已被更新，请刷新后重试"),
+    RESUME_DOCUMENT_CONTENT_INVALID(2011, "简历数据格式不正确"),
+    RESUME_EDIT_PROPOSAL_INVALID(2012, "AI 修改提案无效，请重新描述你的需求"),
+    RESUME_EDIT_AI_FAILED(2013, "AI 生成修改提案失败"),
     
     // ========== 面试模块错误 3xxx ==========
     INTERVIEW_SESSION_NOT_FOUND(3001, "面试会话不存在"),
@@ -62,9 +67,6 @@ public enum ErrorCode {
 
     // ========== 限流模块错误 8xxx ==========
     RATE_LIMIT_EXCEEDED(8001, "请求过于频繁，请稍后再试"),
-
-    // ========== 面试日程模块错误 9xxx ==========
-    INTERVIEW_SCHEDULE_NOT_FOUND(9001, "面试日程不存在"),
 
     // ========== 语音面试模块错误 10xxx ==========
     VOICE_SESSION_NOT_FOUND(10001, "语音面试会话不存在"),

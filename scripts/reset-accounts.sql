@@ -43,12 +43,9 @@ BEGIN
    WHERE session_id IN (SELECT id FROM voice_interview_sessions WHERE user_id <> sys_id);
   DELETE FROM voice_interview_sessions WHERE user_id <> sys_id;
 
-  -- 6) 面试日程
-  DELETE FROM interview_schedule WHERE user_id <> sys_id;
-
-  -- 7) 用户级 LLM 凭证（API Key）
+  -- 6) 用户级 LLM 凭证（API Key）
   DELETE FROM user_llm_credential WHERE user_id <> sys_id;
 
-  -- 8) 最后删除非 system 账户
+  -- 7) 最后删除非 system 账户
   DELETE FROM app_user WHERE id <> sys_id;
 END $$;

@@ -193,10 +193,6 @@ export const request = {
     return instance.put(url, data, config).then(res => res.data);
   },
 
-  patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-    return instance.patch(url, data, config).then(res => res.data);
-  },
-
   delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return instance.delete(url, config).then(res => res.data);
   },

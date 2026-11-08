@@ -1,8 +1,9 @@
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {AnimatePresence, motion} from 'framer-motion';
-import {AlertCircle, CheckCircle, Clock, FileStack, RefreshCw, Sparkles, Upload} from 'lucide-react';
+import {AlertCircle, CheckCircle, Clock, FilePlus2, FileStack, PencilLine, Printer, RefreshCw, Sparkles, Upload} from 'lucide-react';
 import {historyApi, ResumeListItem} from '../api/history';
+import {resumeDocumentApi} from '../api/resumeDocument';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 import {formatDateOnly} from '../utils/date';
 import {getScoreProgressColor} from '../utils/score';
@@ -48,6 +49,10 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; filename: string } | null>(null);
+  // 原始简历 id -> 在线编辑文档 id，用于判断哪些简历已有可编辑数据
+  const [documentBySource, setDocumentBySource] = useState<Map<number, number>>(new Map());
+  const [creatingBlank, setCreatingBlank] = useState(false);
+  const [managingId, setManagingId] = useState<number | null>(null);
 
   const loadResumes = useCallback(async (isPolling = false) => {
     if (!isPolling) setLoading(true);
@@ -64,9 +69,26 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
     }
   }, []);
 
+  // 在线简历列表单独加载，失败不影响原有的上传 / 历史 / 分析功能
+  const loadDocuments = useCallback(async () => {
+    try {
+      const documents = await resumeDocumentApi.list();
+      const mapping = new Map<number, number>();
+      for (const document of documents) {
+        if (document.sourceResumeId !== null) {
+          mapping.set(document.sourceResumeId, document.id);
+        }
+      }
+      setDocumentBySource(mapping);
+    } catch (err) {
+      console.error('加载在线简历列表失败', err);
+    }
+  }, []);
+
   useEffect(() => {
     loadResumes();
-  }, [loadResumes]);
+    loadDocuments();
+  }, [loadResumes, loadDocuments]);
 
   // 轮询：有分析中的简历时启动 3s 轮询
   const hasAnalyzing = resumes.some(r => isAnalyzing(r.analyzeStatus));
@@ -76,6 +98,43 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
     const id = window.setInterval(() => loadResumes(true), 3000);
     return () => clearInterval(id);
   }, [hasAnalyzing, loadResumes]);
+
+  const handleCreateBlank = async () => {
+    if (creatingBlank) return;
+    setCreatingBlank(true);
+    try {
+      const document = await resumeDocumentApi.createBlank();
+      navigate(ROUTES.resumeStudio(document.id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '新建简历失败，请稍后重试');
+    } finally {
+      setCreatingBlank(false);
+    }
+  };
+
+  const handleManage = async (resumeId: number, filename: string) => {
+    const existing = documentBySource.get(resumeId);
+    if (existing) {
+      navigate(ROUTES.resumeStudio(existing));
+      return;
+    }
+    setManagingId(resumeId);
+    try {
+      const document = await resumeDocumentApi.initFromResume(resumeId, filename);
+      setDocumentBySource(prev => new Map(prev).set(resumeId, document.id));
+      navigate(ROUTES.resumeStudio(document.id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '打开编辑工作台失败，请稍后重试');
+    } finally {
+      setManagingId(null);
+    }
+  };
+
+  const handleExportPdf = (resumeId: number) => {
+    const documentId = documentBySource.get(resumeId);
+    if (!documentId) return;
+    navigate(ROUTES.resumeStudio(documentId), {state: {autoPrint: true}});
+  };
 
   const handleDeleteClick = (id: number, filename: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -126,6 +185,15 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
             上传简历
           </button>
           <button
+            onClick={handleCreateBlank}
+            disabled={creatingBlank}
+            className="btn-secondary flex items-center gap-2 px-4 py-2 rounded-lg disabled:opacity-50"
+            title="无需上传文件，直接创建一份可在线编辑的简历"
+          >
+            <FilePlus2 className="w-4 h-4" />
+            新建空白简历
+          </button>
+          <button
             onClick={() => navigate('/interview-hub')}
             className="btn-secondary flex items-center gap-2 px-4 py-2 rounded-lg"
           >
@@ -173,7 +241,14 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
         >
           <div className="text-6xl mb-6">📄</div>
           <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">暂无简历记录</h3>
-          <p className="text-slate-500 dark:text-slate-400">上传简历开始您的第一次 AI 面试分析</p>
+          <p className="text-slate-500 dark:text-slate-400">上传简历开始您的第一次 AI 面试分析，或直接新建一份在线简历</p>
+          <button
+            onClick={handleCreateBlank}
+            disabled={creatingBlank}
+            className="btn-secondary mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-lg disabled:opacity-50"
+          >
+            <FilePlus2 className="w-4 h-4"/>新建空白简历
+          </button>
         </motion.div>
       )}
 
@@ -193,7 +268,7 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">分析状态</th>
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">AI 评分</th>
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">面试状态</th>
-              <th className="w-20"></th>
+              <th className="w-44"></th>
             </tr>
             </thead>
             <tbody>
@@ -271,7 +346,34 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
                     )}
                   </td>
                   <td className="px-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleManage(resume.id, resume.filename);
+                        }}
+                        disabled={managingId === resume.id}
+                        className="p-2 text-slate-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/15 rounded-lg transition-colors disabled:opacity-50"
+                        title="管理简历（在线编辑）"
+                      >
+                        {managingId === resume.id ? (
+                          <RefreshCw className="w-4 h-4 animate-spin"/>
+                        ) : (
+                          <PencilLine className="w-4 h-4"/>
+                        )}
+                      </button>
+                      {documentBySource.has(resume.id) && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleExportPdf(resume.id);
+                          }}
+                          className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/15 rounded-lg transition-colors"
+                          title="导出 PDF（在线简历）"
+                        >
+                          <Printer className="w-4 h-4"/>
+                        </button>
+                      )}
                       <button
                         onClick={(e) => handleDeleteClick(resume.id, resume.filename, e)}
                         disabled={deletingId === resume.id}

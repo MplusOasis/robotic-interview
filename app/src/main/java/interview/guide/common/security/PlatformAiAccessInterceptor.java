@@ -46,8 +46,7 @@ public class PlatformAiAccessInterceptor implements HandlerInterceptor {
         "/api/knowledgebase/**",
         "/api/knowledgebase-interviews/**",
         "/api/rag-chat/**",
-        "/api/voice-interview/**",
-        "/api/interview-schedule/**"
+        "/api/voice-interview/**"
     );
 
     private final CurrentUserProvider currentUserProvider;
