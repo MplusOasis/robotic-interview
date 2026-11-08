@@ -17,6 +17,9 @@
   --ss-shadow: 0 18px 40px -20px rgba(15, 23, 42, 0.35);
 
   position: relative;
+  /* 面板的 z-index 困在 isolation 创建的层叠上下文里，需把整个切换器
+     抬到侧边栏导航项（position: relative）与底部 dock 之上 */
+  z-index: 60;
   isolation: isolate;
   display: flex;
   flex-direction: column;

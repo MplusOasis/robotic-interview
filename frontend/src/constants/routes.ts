@@ -4,10 +4,14 @@ export const ROUTES = {
   interviewSession: (sessionId: string) => `/interview/session/${sessionId}`,
   resumeUpload: '/upload',
   resumeHistory: '/history',
+  /** 简历管理模块内部的在线编辑工作台，不是新的 Dock 入口。 */
+  resumeStudio: (documentId: number) => `/history/studio/${documentId}`,
+  settings: '/settings',
   knowledgebaseUpload: '/knowledgebase/upload',
 } as const;
 
 export const ROUTE_PATTERNS = {
   interviewCreate: 'interview/create/:requestId',
   interviewSession: 'interview/session/:activeSessionId',
+  resumeStudio: 'history/studio/:documentId',
 } as const;

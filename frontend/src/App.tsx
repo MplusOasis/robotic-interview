@@ -13,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const HistoryList = lazy(() => import('./pages/HistoryPage'));
 const ResumeDetailPage = lazy(() => import('./pages/ResumeDetailPage'));
+const ResumeStudioPage = lazy(() => import('./pages/ResumeStudioPage'));
 const Interview = lazy(() => import('./pages/InterviewPage'));
 const InterviewHistoryPage = lazy(() => import('./pages/InterviewHistoryPage'));
 const KnowledgeBaseQueryPage = lazy(() => import('./pages/KnowledgeBaseQueryPage'));
@@ -23,7 +24,6 @@ const KnowledgeBaseInterviewQuestionsPage = lazy(() => import('./pages/Knowledge
 const KnowledgeBaseInterviewSessionPage = lazy(() => import('./pages/KnowledgeBaseInterviewSessionPage'));
 const VoiceInterviewPage = lazy(() => import('./pages/VoiceInterviewPage'));
 const VoiceInterviewEvaluationPage = lazy(() => import('./pages/VoiceInterviewEvaluationPage'));
-const InterviewSchedulePage = lazy(() => import('./pages/InterviewSchedulePage'));
 const InterviewHubPage = lazy(() => import('./pages/InterviewHubPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const InterviewDetailPanel = lazy(() => import('./components/InterviewDetailPanel'));
@@ -212,6 +212,9 @@ function App() {
               {/* 历史记录列表（简历库） */}
               <Route path="history" element={<HistoryListWrapper />} />
 
+              {/* 在线简历编辑工作台（简历管理模块内部二级页面，Dock 不新增入口） */}
+              <Route path={ROUTE_PATTERNS.resumeStudio} element={<ResumeStudioPage />} />
+
               {/* 简历详情 */}
               <Route path="history/:resumeId" element={<ResumeDetailWrapper />} />
 
@@ -254,9 +257,6 @@ function App() {
 
               {/* 知识库上传 */}
               <Route path="knowledgebase/upload" element={<KnowledgeBaseUploadPageWrapper />} />
-
-              {/* 面试日程管理 */}
-              <Route path="interview-schedule" element={<InterviewSchedulePage />} />
 
               {/* 设置 */}
               <Route path="settings" element={<SettingsPage />} />

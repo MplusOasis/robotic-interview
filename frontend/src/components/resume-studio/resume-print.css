@@ -1,0 +1,233 @@
+/* ============================================================
+ * 简历模板样式：屏幕预览与浏览器「另存为 PDF」共用同一套
+ * 模板组件与 stylesheet，避免两份排版不一致。
+ * ============================================================ */
+
+.resume-template {
+  --rt-ink: #1f2937;
+  --rt-muted: #64748b;
+  --rt-accent: #1d4ed8;
+  --rt-line: #d9e0ea;
+  font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB",
+    "Source Han Sans SC", "SimSun", sans-serif;
+  color: var(--rt-ink);
+  background: #fff;
+  font-size: 10.5pt;
+  line-height: 1.62;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.resume-sheet {
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 14mm 16mm;
+  background: #fff;
+  box-shadow: 0 18px 48px -18px rgba(15, 23, 42, 0.35);
+}
+
+.rt-header {
+  border-bottom: 2px solid var(--rt-accent);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.rt-name {
+  margin: 0;
+  font-size: 22pt;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.25;
+}
+
+.rt-name-placeholder {
+  color: #94a3b8;
+}
+
+.rt-target {
+  margin-top: 4px;
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--rt-accent);
+}
+
+.rt-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin-top: 8px;
+  font-size: 9.5pt;
+  color: var(--rt-muted);
+}
+
+.rt-contact-item {
+  white-space: nowrap;
+}
+
+.rt-section {
+  margin-bottom: 13px;
+}
+
+.rt-section-title {
+  margin: 0 0 8px;
+  padding-left: 9px;
+  border-left: 3px solid var(--rt-accent);
+  font-size: 12pt;
+  font-weight: 700;
+  color: var(--rt-accent);
+  line-height: 1.3;
+}
+
+.rt-item {
+  margin-bottom: 9px;
+}
+
+.rt-item:last-child {
+  margin-bottom: 0;
+}
+
+.rt-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rt-item-title {
+  font-size: 10.5pt;
+  font-weight: 600;
+}
+
+.rt-item-sub {
+  font-size: 9.5pt;
+  color: var(--rt-muted);
+}
+
+.rt-item-date {
+  flex: none;
+  font-size: 9pt;
+  color: var(--rt-muted);
+  white-space: nowrap;
+}
+
+.rt-summary {
+  margin: 4px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 5px 0;
+}
+
+.rt-tag {
+  padding: 0 7px;
+  border: 1px solid var(--rt-line);
+  border-radius: 3px;
+  font-size: 9pt;
+  color: #334155;
+  background: #f8fafc;
+}
+
+.rt-highlights {
+  margin: 5px 0 0;
+  padding-left: 18px;
+}
+
+.rt-highlights li {
+  margin-bottom: 2px;
+  overflow-wrap: anywhere;
+}
+
+.rt-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+}
+
+.rt-skill {
+  padding-left: 7px;
+  border-left: 2px solid var(--rt-accent);
+}
+
+.rt-link {
+  color: var(--rt-accent);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.rt-empty {
+  color: #94a3b8;
+  font-size: 9pt;
+  font-style: italic;
+}
+
+.rt-muted-line {
+  margin: 2px 0;
+  font-size: 9.5pt;
+  color: var(--rt-muted);
+}
+
+/* 打印副本默认隐藏，只在 @media print 中显示 */
+.resume-print-root {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* 工作台挂在 body 上的标记，避免影响其它页面的打印 */
+  body.resume-studio-active > #root {
+    display: none !important;
+  }
+
+  body.resume-studio-active > .resume-print-root {
+    display: block !important;
+  }
+
+  .resume-print-root .resume-template {
+    font-size: 10.5pt;
+  }
+
+  .resume-print-root .resume-sheet {
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  .rt-empty {
+    display: none !important;
+  }
+
+  .rt-section-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .rt-item,
+  .rt-highlights li,
+  .rt-header {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .rt-link {
+    color: var(--rt-ink);
+  }
+}
