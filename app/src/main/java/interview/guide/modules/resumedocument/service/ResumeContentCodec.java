@@ -10,8 +10,10 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -38,6 +40,17 @@ public class ResumeContentCodec {
     private static final List<String> NON_NAME_KEYWORDS = List.of(
         "简历", "个人", "求职", "姓名", "电话", "邮箱", "教育", "项目", "技能", "经历",
         "大学", "学院", "专业", "意向", "地址", "性别", "出生", "政治", "objective", "resume");
+    /** “2019-09 / 2019.09 / 2019年9月” 形式的年月。 */
+    private static final Pattern DATE_TOKEN = Pattern.compile("(\\d{4})\\s*[./年-]\\s*(\\d{1,2})\\s*月?");
+    private static final Pattern SCHOOL_PREFIX =
+        Pattern.compile("^(.*?(?:大学|学院|学校|University|College))(.*)$");
+    private static final Pattern TECH_LABEL = Pattern.compile(
+        "^(?:技术栈|技术关键词|关键词|使用技术|技术选型|开发技术|技术框架)\\s*[:：]?\\s*(.+)$");
+    private static final Pattern SUMMARY_LABEL = Pattern.compile(
+        "^(?:项目介绍|项目描述|项目简介|项目背景|项目概述|简介|概述)\\s*[:：]?\\s*(.+)$");
+    private static final Pattern BULLET = Pattern.compile("^\\s*(?:[-•·*・▪◦]|\\d{1,2}[.、)])\\s*");
+    private static final Pattern INLINE_SKILL = Pattern.compile(
+        "^(?:专业技能|技能清单|核心技能|技能特长|技术能力|技能)\\s*[:：]\\s*(.+)$");
 
     private final ObjectMapper objectMapper;
 
@@ -133,7 +146,8 @@ public class ResumeContentCodec {
 
     /**
      * 从已落库的 resume_text 做本地规则抽取，初始化结构化简历。
-     * 不调用任何 LLM；抽取不到的字段留空，由用户通过 AI 对话或快速编辑补充。
+     * 不调用任何 LLM；先按章节分块再抽取字段，避免项目描述污染技能列表。
+     * 抽取不到的字段留空，由用户通过 AI 对话或快速编辑补充。
      */
     public ResumeContent fromResumeText(String resumeText) {
         ResumeContent content = blank();
@@ -141,7 +155,14 @@ public class ResumeContentCodec {
             return content;
         }
         String text = resumeText.length() > 20_000 ? resumeText.substring(0, 20_000) : resumeText;
-        String[] lines = text.split("\\R");
+        List<String> lines = new ArrayList<>();
+        for (String rawLine : text.split("\\R")) {
+            String line = rawLine.trim();
+            if (!line.isEmpty()) {
+                lines.add(line);
+            }
+        }
+        Map<Section, List<String>> sections = splitSections(lines);
         ResumeContent.BasicInfo basic = content.getBasicInfo();
 
         Matcher phone = PHONE.matcher(text);
@@ -161,84 +182,319 @@ public class ResumeContentCodec {
                 basic.setBlogUrl(blog.group());
             }
         }
-        Matcher degree = DEGREE.matcher(text);
-        if (degree.find()) {
-            basic.setDegree(degree.group());
-        }
-        Matcher major = MAJOR.matcher(text);
-        if (major.find()) {
-            String candidate = major.group(1);
-            if (!candidate.contains("技能") && !candidate.contains("简历")) {
-                basic.setMajor(clip(candidate, ResumeDocumentLimits.MAX_SHORT_TEXT));
-            }
-        }
         Matcher target = TARGET.matcher(text);
         if (target.find()) {
             basic.setTargetPosition(clip(target.group(1).trim(), ResumeDocumentLimits.MAX_SHORT_TEXT));
         }
-
-        String school = null;
-        for (int i = 0; i < Math.min(lines.length, 25); i++) {
-            String line = lines[i].trim();
-            if (line.isEmpty()) {
-                continue;
-            }
+        for (String line : sections.get(Section.HEADER)) {
             if (basic.getName().isEmpty() && NAME_LINE.matcher(line).matches()
                 && NON_NAME_KEYWORDS.stream().noneMatch(line::contains)) {
                 basic.setName(line);
-            }
-            if (school == null && (line.contains("大学") || line.contains("学院"))
-                && line.length() <= 40) {
-                school = line;
+                break;
             }
         }
-        if (school != null) {
-            basic.setSchool(clip(school, ResumeDocumentLimits.MAX_SHORT_TEXT));
-            ResumeContent.EducationItem item = new ResumeContent.EducationItem();
-            item.setId(UUID.randomUUID().toString());
-            item.setSchool(clip(school, ResumeDocumentLimits.MAX_SHORT_TEXT));
-            item.setMajor(basic.getMajor());
-            item.setDegree(basic.getDegree());
-            content.getEducation().add(item);
+
+        List<ResumeContent.EducationItem> education = extractEducation(sections);
+        content.setEducation(education);
+        if (!education.isEmpty()) {
+            ResumeContent.EducationItem first = education.get(0);
+            basic.setSchool(first.getSchool());
+            basic.setMajor(first.getMajor());
+            basic.setDegree(first.getDegree());
         }
-        content.setSkills(extractSkills(lines));
+        if (basic.getDegree().isEmpty()) {
+            Matcher degree = DEGREE.matcher(text);
+            if (degree.find()) {
+                basic.setDegree(degree.group());
+            }
+        }
+        if (basic.getMajor().isEmpty()) {
+            Matcher major = MAJOR.matcher(text);
+            if (major.find()) {
+                String candidate = major.group(1);
+                if (!candidate.contains("技能") && !candidate.contains("简历")) {
+                    basic.setMajor(clip(candidate, ResumeDocumentLimits.MAX_SHORT_TEXT));
+                }
+            }
+        }
+        content.setProjects(extractProjects(sections));
+        content.setSkills(extractSkills(sections));
         return normalize(content);
     }
 
-    private List<String> extractSkills(String[] lines) {
-        List<String> skills = new ArrayList<>();
-        boolean inSection = false;
-        for (String rawLine : lines) {
-            String line = rawLine.trim();
-            if (line.isEmpty()) {
+    /** 简历正文章节。实习、获奖等扩展位不由规则臆造，保留给表单与 AI 对话补全。 */
+    private enum Section { HEADER, EDUCATION, PROJECT, SKILL }
+
+    private Map<Section, List<String>> splitSections(List<String> lines) {
+        Map<Section, List<String>> sections = new EnumMap<>(Section.class);
+        for (Section section : Section.values()) {
+            sections.put(section, new ArrayList<>());
+        }
+        Section current = Section.HEADER;
+        for (String line : lines) {
+            Section heading = detectSection(line);
+            if (heading != null) {
+                current = heading;
                 continue;
             }
-            if (!inSection) {
-                if (line.contains("专业技能") || line.contains("技术栈") || line.contains("技能清单")) {
-                    inSection = true;
+            // “专业技能：Java、Redis” 这类标题与内容同行的写法
+            Matcher inlineSkill = INLINE_SKILL.matcher(line);
+            if (inlineSkill.matches()) {
+                current = Section.SKILL;
+                sections.get(Section.SKILL).add(inlineSkill.group(1).trim());
+                continue;
+            }
+            sections.get(current).add(line);
+        }
+        return sections;
+    }
+
+    /** 只把独立的短标题行识别为章节，避免把“技术栈：xxx”或项目名误判为章节标题。 */
+    private Section detectSection(String line) {
+        String heading = line.replaceAll("[\\s:：|丨]+$", "").trim();
+        if (heading.isEmpty() || heading.length() > 12) {
+            return null;
+        }
+        if (DATE_TOKEN.matcher(heading).find() || PHONE.matcher(heading).find()) {
+            return null;
+        }
+        if (heading.matches("^(?:教育|教育经历|教育背景|教育情况|学习经历)$")) {
+            return Section.EDUCATION;
+        }
+        if (heading.matches("^(?:项目|项目经历|项目经验|项目实践|项目列表|个人项目|实践经历)$")) {
+            return Section.PROJECT;
+        }
+        if (heading.matches("^(?:技能|专业技能|技能清单|核心技能|技能特长|技术栈|技术能力)$")) {
+            return Section.SKILL;
+        }
+        return null;
+    }
+
+    private List<ResumeContent.EducationItem> extractEducation(Map<Section, List<String>> sections) {
+        List<String> candidates = new ArrayList<>(sections.get(Section.EDUCATION));
+        if (candidates.isEmpty()) {
+            for (String line : sections.get(Section.HEADER)) {
+                if ((line.contains("大学") || line.contains("学院")) && line.length() <= 60) {
+                    candidates.add(line);
                 }
-                continue;
             }
-            if (isSectionTitle(line)) {
+        }
+        List<ResumeContent.EducationItem> items = new ArrayList<>();
+        for (String line : candidates) {
+            ResumeContent.EducationItem item = parseEducationLine(line);
+            if (item != null) {
+                items.add(item);
+            }
+            if (items.size() >= 5) {
                 break;
             }
-            for (String part : line.split("[、,，;；|/]+")) {
-                String skill = clip(part.trim(), ResumeDocumentLimits.MAX_SHORT_TEXT);
-                if (skill.length() >= 2 && skill.length() <= 40 && skills.size() < ResumeDocumentLimits.MAX_SKILLS) {
-                    skills.add(skill);
-                }
+        }
+        return items;
+    }
+
+    /** “大连理工大学 计算机科学与技术 本科 2019-09 至 2023-06” 拆为学校/专业/学位/起止时间。 */
+    private ResumeContent.EducationItem parseEducationLine(String line) {
+        String[] dates = extractDates(line);
+        String degree = "";
+        Matcher degreeMatcher = DEGREE.matcher(line);
+        if (degreeMatcher.find()) {
+            degree = degreeMatcher.group();
+        }
+        String rest = DEGREE.matcher(removeDates(line)).replaceAll(" ");
+        String school = "";
+        String major = "";
+        for (String token : rest.split("[\\s|丨、,，/]+")) {
+            if (token.isBlank()) {
+                continue;
             }
+            if (school.isEmpty() && token.matches(".*(?:大学|学院|学校|University|College).*")) {
+                // “清华大学计算机科学与技术”这类无空格写法：学校名到“大学/学院”为止
+                Matcher matcher = SCHOOL_PREFIX.matcher(token);
+                if (matcher.matches()) {
+                    school = matcher.group(1);
+                    major = cleanMajor(matcher.group(2));
+                } else {
+                    school = token;
+                }
+            } else if (major.isEmpty()) {
+                major = cleanMajor(token);
+            }
+        }
+        if (school.isBlank()) {
+            return null;
+        }
+        ResumeContent.EducationItem item = new ResumeContent.EducationItem();
+        item.setId(UUID.randomUUID().toString());
+        item.setSchool(clip(school, ResumeDocumentLimits.MAX_SHORT_TEXT));
+        item.setMajor(clip(major, ResumeDocumentLimits.MAX_SHORT_TEXT));
+        item.setDegree(degree);
+        if (dates != null) {
+            item.setStartDate(dates[0]);
+            item.setEndDate(dates[1]);
+        }
+        return item;
+    }
+
+    private String cleanMajor(String token) {
+        if (token == null) {
+            return "";
+        }
+        String major = token.replaceFirst("^专业[:：]?", "").replaceAll("专业$", "").trim();
+        return major.length() >= 2 && !major.matches(".*\\d.*") ? major : "";
+    }
+
+    private List<ResumeContent.ProjectItem> extractProjects(Map<Section, List<String>> sections) {
+        List<List<String>> blocks = new ArrayList<>();
+        List<String> current = null;
+        for (String line : sections.get(Section.PROJECT)) {
+            if (isProjectNameLine(line)) {
+                current = new ArrayList<>();
+                blocks.add(current);
+            }
+            if (current != null) {
+                current.add(line);
+            }
+        }
+        List<ResumeContent.ProjectItem> projects = new ArrayList<>();
+        for (List<String> block : blocks) {
+            ResumeContent.ProjectItem item = parseProjectBlock(block);
+            if (item != null) {
+                projects.add(item);
+            }
+            if (projects.size() >= ResumeDocumentLimits.MAX_LIST_ITEMS) {
+                break;
+            }
+        }
+        return projects;
+    }
+
+    /** 项目名通常是短行且不带句读；含“技术栈：”“亮点一：”等标签或句号的行属于项目内容。 */
+    private boolean isProjectNameLine(String line) {
+        if (line.length() > 40 || BULLET.matcher(line).find()) {
+            return false;
+        }
+        if (line.matches(".*[，。；：:].*")) {
+            return false;
+        }
+        return !line.matches("^(?:亮点|项目亮点|技术亮点|职责|负责|主要工作|项目职责|工作职责|成果|收获"
+            + "|技术栈|使用技术|项目介绍|项目描述).*");
+    }
+
+    private ResumeContent.ProjectItem parseProjectBlock(List<String> block) {
+        ResumeContent.ProjectItem item = new ResumeContent.ProjectItem();
+        item.setId(UUID.randomUUID().toString());
+        String nameLine = block.get(0);
+        String[] dates = extractDates(nameLine);
+        item.setName(clip(removeDates(nameLine).replaceAll("[【】\\[\\]]", "").trim(),
+            ResumeDocumentLimits.MAX_SHORT_TEXT));
+        if (dates != null) {
+            item.setStartDate(dates[0]);
+            item.setEndDate(dates[1]);
+        }
+        List<String> techStack = new ArrayList<>();
+        List<String> highlights = new ArrayList<>();
+        String summary = "";
+        for (int i = 1; i < block.size(); i++) {
+            String line = block.get(i);
+            Matcher techMatcher = TECH_LABEL.matcher(line);
+            if (techMatcher.matches()) {
+                for (String part : techMatcher.group(1).split("[、,，;；|/]+")) {
+                    String tech = clip(part.trim(), ResumeDocumentLimits.MAX_SHORT_TEXT);
+                    if (!tech.isEmpty()) {
+                        techStack.add(tech);
+                    }
+                }
+                continue;
+            }
+            Matcher summaryMatcher = SUMMARY_LABEL.matcher(line);
+            if (summaryMatcher.matches()) {
+                summary = clip(summaryMatcher.group(1).trim(), 600);
+                continue;
+            }
+            boolean bullet = BULLET.matcher(line).find();
+            String cleaned = BULLET.matcher(line).replaceFirst("").trim()
+                .replaceFirst("^(?:项目亮点|技术亮点|亮点)\\s*[0-9零一二三四五六七八九十]*\\s*[:：]?\\s*", "")
+                .trim();
+            if (cleaned.isEmpty()) {
+                continue;
+            }
+            if (summary.isEmpty() && highlights.isEmpty() && !bullet
+                && !line.matches("^(?:亮点|项目亮点|技术亮点|负责|职责|主要工作|成果).*")) {
+                // 项目名之后的第一句普通描述视为项目介绍，其余内容进入亮点列表
+                summary = clip(cleaned, 600);
+            } else {
+                highlights.add(clip(cleaned, ResumeDocumentLimits.MAX_LONG_TEXT));
+            }
+        }
+        // 只有项目名称、没有任何实质内容时不臆造项目条目，交由 AI 对话或表单补全
+        if (item.getName().isEmpty()
+            || (techStack.isEmpty() && summary.isEmpty() && highlights.isEmpty())) {
+            return null;
+        }
+        item.setTechStack(techStack.stream().distinct().limit(20).toList());
+        item.setSummary(summary);
+        List<ResumeContent.HighlightItem> highlightItems = new ArrayList<>();
+        for (String highlight : highlights) {
+            if (highlightItems.size() >= ResumeDocumentLimits.MAX_HIGHLIGHTS_PER_PROJECT) {
+                break;
+            }
+            ResumeContent.HighlightItem highlightItem = new ResumeContent.HighlightItem();
+            highlightItem.setId(UUID.randomUUID().toString());
+            highlightItem.setContent(highlight);
+            highlightItems.add(highlightItem);
+        }
+        item.setHighlights(highlightItems);
+        return item;
+    }
+
+    /** 抽取 “2019-09 至 2023-06 / 2021.03-至今” 中的起止时间，返回 {start, end}。 */
+    private String[] extractDates(String line) {
+        Matcher matcher = DATE_TOKEN.matcher(line);
+        List<String> dates = new ArrayList<>();
+        while (matcher.find()) {
+            dates.add(String.format("%s-%02d", matcher.group(1), Integer.parseInt(matcher.group(2))));
+        }
+        if (dates.size() >= 2) {
+            return new String[] {dates.get(0), dates.get(1)};
+        }
+        if (dates.size() == 1 && line.matches(".*(?:至今|现在|今).*")) {
+            return new String[] {dates.get(0), "至今"};
+        }
+        return null;
+    }
+
+    private String removeDates(String line) {
+        String cleaned = line.replaceAll("[（(][^）)]*\\d{4}[^）)]*[）)]", " ");
+        cleaned = DATE_TOKEN.matcher(cleaned).replaceAll(" ");
+        return cleaned.replaceAll("[\\s至到~\\-–—|丨]+$", "").trim();
+    }
+
+    private List<String> extractSkills(Map<Section, List<String>> sections) {
+        List<String> skills = new ArrayList<>();
+        for (String line : sections.get(Section.SKILL)) {
+            collectSkills(line, skills);
             if (skills.size() >= ResumeDocumentLimits.MAX_SKILLS) {
                 break;
             }
         }
-        return skills;
+        if (skills.isEmpty()) {
+            for (String line : sections.get(Section.HEADER)) {
+                if (line.matches(".*(?:熟悉|精通|掌握|了解).*") && line.contains("：")) {
+                    collectSkills(line.substring(line.indexOf("：") + 1), skills);
+                }
+            }
+        }
+        return skills.stream().distinct().limit(ResumeDocumentLimits.MAX_SKILLS).toList();
     }
 
-    private boolean isSectionTitle(String line) {
-        return line.length() <= 20 && (line.contains("教育经历") || line.contains("项目经历")
-            || line.contains("项目经验") || line.contains("实习") || line.contains("获奖")
-            || line.contains("自我评价") || line.contains("工作经历"));
+    private void collectSkills(String line, List<String> skills) {
+        for (String part : line.split("[、,，;；|/]+")) {
+            String skill = clip(part.trim(), ResumeDocumentLimits.MAX_SHORT_TEXT);
+            if (skill.length() >= 2 && skill.length() <= 40
+                && skills.size() < ResumeDocumentLimits.MAX_SKILLS) {
+                skills.add(skill);
+            }
+        }
     }
 
     private void normalizeShort(ResumeContent.BasicInfo basic) {

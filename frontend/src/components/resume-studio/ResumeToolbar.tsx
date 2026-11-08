@@ -45,7 +45,7 @@ export default function ResumeToolbar({
   frozen = false,
 }: ResumeToolbarProps) {
   return (
-    <div className="flex items-center gap-3 flex-wrap pb-4 border-b border-slate-200 dark:border-[rgba(104,85,255,0.16)]">
+    <div className="flex items-center gap-3 flex-wrap pb-4 border-b border-slate-200 dark:border-[rgb(var(--skin-accent)/0.16)]">
       <button
         onClick={onBack}
         className="btn-secondary inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm"

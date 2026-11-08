@@ -33,7 +33,7 @@ export default function ResumePreview({content}: ResumePreviewProps) {
       </div>
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 overflow-auto scrollbar-thin rounded-2xl border border-slate-200 dark:border-[rgba(104,85,255,0.18)] bg-slate-100 dark:bg-[rgba(7,13,32,0.55)] p-6"
+        className="flex-1 min-h-0 overflow-auto scrollbar-thin rounded-2xl border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.18)] bg-slate-100 dark:bg-[rgb(var(--skin-surface-deep)/0.55)] p-6"
       >
         <div className="flex justify-center">
           <div style={{zoom: scale} as CSSProperties}>

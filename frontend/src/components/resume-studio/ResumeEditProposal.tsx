@@ -20,7 +20,7 @@ export default function ResumeEditProposal({
   const deleting = hasDeleteOperation(proposal);
 
   return (
-    <div className="rounded-xl border border-primary-500/35 bg-white/90 dark:bg-[rgba(25,39,82,0.7)] p-4 shadow-lg dark:shadow-[0_0_28px_-14px_rgba(104,85,255,0.8)]">
+    <div className="rounded-xl border border-primary-500/35 bg-white/90 dark:bg-[rgb(var(--skin-surface-deep)/0.7)] p-4 shadow-lg dark:shadow-[0_0_28px_-14px_rgb(var(--skin-accent)/0.8)]">
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
           {needsClarification ? '需要补充信息' : 'AI 修改提案（待确认）'}

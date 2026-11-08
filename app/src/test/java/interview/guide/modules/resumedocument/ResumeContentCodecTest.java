@@ -65,6 +65,71 @@ class ResumeContentCodecTest {
   }
 
   @Test
+  @DisplayName("按章节抽取教育起止时间、项目技术栈与多条亮点，技能不被项目描述污染")
+  void extractSectionedResumeText() {
+      String text = """
+          张三
+          电话：13800000000  邮箱：qa@example.com
+          求职意向：Java 后端开发
+
+          教育经历
+          大连理工大学 计算机科学与技术 本科 2019-09 至 2023-06
+
+          技能
+          Java, Spring Boot, PostgreSQL, Redis
+
+          项目经历
+          奶娃面试官（2025-01 至 2025-06）
+          技术栈：Spring Boot、Spring AI、PostgreSQL、Redis
+          项目介绍：面向求职者的 AI 在线面试平台。
+          亮点一：Multi-Agent 协作完成结构化提问与追问。
+          亮点二：RAG 知识库支撑个性化面试题。
+          亮点三：Redis Stream 实现异步评估。
+          """;
+      ResumeContent content = codec.fromResumeText(text);
+
+      assertThat(content.getBasicInfo().getSchool()).isEqualTo("大连理工大学");
+      assertThat(content.getBasicInfo().getMajor()).isEqualTo("计算机科学与技术");
+      assertThat(content.getEducation()).hasSize(1);
+      ResumeContent.EducationItem education = content.getEducation().get(0);
+      assertThat(education.getStartDate()).isEqualTo("2019-09");
+      assertThat(education.getEndDate()).isEqualTo("2023-06");
+
+      assertThat(content.getProjects()).hasSize(1);
+      ResumeContent.ProjectItem project = content.getProjects().get(0);
+      assertThat(project.getName()).isEqualTo("奶娃面试官");
+      assertThat(project.getStartDate()).isEqualTo("2025-01");
+      assertThat(project.getEndDate()).isEqualTo("2025-06");
+      assertThat(project.getTechStack()).contains("Spring Boot", "Spring AI", "PostgreSQL", "Redis");
+      assertThat(project.getSummary()).contains("AI 在线面试平台");
+      assertThat(project.getHighlights()).hasSize(3);
+      assertThat(project.getHighlights().get(0).getContent()).startsWith("Multi-Agent");
+
+      assertThat(content.getSkills()).contains("Java", "Spring Boot", "PostgreSQL", "Redis");
+      assertThat(content.getSkills()).noneMatch(skill -> skill.contains("亮点") || skill.contains("项目介绍"));
+  }
+
+  @Test
+  @DisplayName("支持技能标题与内容同行，项目要点按列表符号抽取")
+  void extractInlineSkillHeadingAndBullets() {
+      String text = """
+          李四
+          专业技能：Java、Spring Boot、Redis
+          项目经历
+          校园二手交易平台
+          - 使用 Spring Boot 与 Redis 实现下单与缓存
+          """;
+      ResumeContent content = codec.fromResumeText(text);
+
+      assertThat(content.getSkills()).contains("Java", "Spring Boot", "Redis");
+      assertThat(content.getProjects()).hasSize(1);
+      ResumeContent.ProjectItem project = content.getProjects().get(0);
+      assertThat(project.getName()).isEqualTo("校园二手交易平台");
+      assertThat(project.getHighlights()).hasSize(1);
+      assertThat(project.getHighlights().get(0).getContent()).contains("下单与缓存");
+  }
+
+  @Test
   @DisplayName("规范化为缺失记录生成稳定唯一 ID 并重排亮点序号")
   void normalizeGeneratesStableIds() {
     ResumeContent raw = codec.blank();

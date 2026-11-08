@@ -1,9 +1,10 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {ChevronDown, ChevronUp} from 'lucide-react';
+import {PenLine, Sparkles} from 'lucide-react';
 import ResumeToolbar from '../components/resume-studio/ResumeToolbar';
 import ResumeChat, {type ChatMessage} from '../components/resume-studio/ResumeChat';
+import ResumeContentEditor from '../components/resume-studio/ResumeContentEditor';
 import ResumePreview from '../components/resume-studio/ResumePreview';
 import ResumeTemplate from '../components/resume-studio/ResumeTemplate';
 import '../components/resume-studio/resume-print.css';
@@ -15,28 +16,17 @@ import {
   newLocalId,
   normalizeProposal,
   normalizeResumeContent,
-  type ResumeBasicInfo,
   type ResumeChatTurn,
   type ResumeContent,
   type ResumeEditProposal as Proposal,
   type SaveStatus,
 } from '../types/resumeDocument';
 
-const BASIC_FIELDS: {key: keyof ResumeBasicInfo; label: string; placeholder: string}[] = [
-  {key: 'name', label: '姓名', placeholder: '张三'},
-  {key: 'phone', label: '电话', placeholder: '13800138000'},
-  {key: 'email', label: '邮箱', placeholder: 'name@example.com'},
-  {key: 'school', label: '学校', placeholder: 'XX 大学'},
-  {key: 'major', label: '专业', placeholder: '计算机科学与技术'},
-  {key: 'degree', label: '学历', placeholder: '本科'},
-  {key: 'targetPosition', label: '求职意向', placeholder: 'Java 后端开发工程师'},
-  {key: 'githubUrl', label: 'GitHub', placeholder: 'https://github.com/...'},
-  {key: 'blogUrl', label: '博客', placeholder: 'https://...'},
-];
+type StudioTab = 'edit' | 'ai';
 
 /**
  * 简历编辑工作台（简历管理模块内部二级页面，不新增 Dock 入口）。
- * 左侧 AI 对话 + 基本信息快速编辑，右侧 A4 实时预览；预览与 PDF 共用同一模板。
+ * 左侧「内容编辑 / AI 修改」双页签，右侧 A4 实时预览；预览与 PDF 共用同一模板。
  */
 export default function ResumeStudioPage() {
   const {documentId: rawId} = useParams<{documentId: string}>();
@@ -60,7 +50,7 @@ export default function ResumeStudioPage() {
   const [applyLoading, setApplyLoading] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [basicOpen, setBasicOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<StudioTab>('edit');
 
   const dirtyRef = useRef(false);
   const stateRef = useRef({title: '', content: createBlankResumeContent(), version: 0});
@@ -175,11 +165,7 @@ export default function ResumeStudioPage() {
     markDirty();
   };
 
-  const handleBasicChange = (field: keyof ResumeBasicInfo, value: string) => {
-    const next: ResumeContent = {
-      ...content,
-      basicInfo: {...content.basicInfo, [field]: value},
-    };
+  const handleContentChange = (next: ResumeContent) => {
     stateRef.current.content = next;
     setContent(next);
     markDirty();
@@ -302,45 +288,54 @@ export default function ResumeStudioPage() {
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(340px,36%)_minmax(0,1fr)] gap-5 pt-4">
         <div className="flex flex-col min-h-0 gap-3">
-          <div className="dark-card px-4 py-3 flex-none">
+          <div className="dark-card px-2 py-2 flex-none flex items-center gap-1">
             <button
-              onClick={() => setBasicOpen(open => !open)}
-              className="w-full flex items-center justify-between text-sm font-semibold text-slate-700 dark:text-slate-200"
+              type="button"
+              onClick={() => setActiveTab('edit')}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'edit'
+                  ? 'bg-primary-50 text-primary-600 dark:bg-[rgb(var(--skin-accent)/0.18)] dark:text-neon-cyan'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)]'
+              }`}
             >
-              <span>基本信息快速编辑</span>
-              {basicOpen ? <ChevronUp className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
+              <PenLine className="w-4 h-4"/>内容编辑
             </button>
-            {basicOpen && (
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                {BASIC_FIELDS.map(field => (
-                  <label key={field.key} className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
-                    {field.label}
-                    <input
-                      value={content.basicInfo[field.key]}
-                      onChange={event => handleBasicChange(field.key, event.target.value)}
-                      disabled={frozen}
-                      maxLength={200}
-                      placeholder={field.placeholder}
-                      className="dark-input px-2 py-1.5 rounded-lg text-sm text-slate-700 dark:text-slate-200 disabled:opacity-60"
-                    />
-                  </label>
-                ))}
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => setActiveTab('ai')}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'ai'
+                  ? 'bg-primary-50 text-primary-600 dark:bg-[rgb(var(--skin-accent)/0.18)] dark:text-neon-cyan'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)]'
+              }`}
+            >
+              <Sparkles className="w-4 h-4"/>AI 修改
+              {proposal && <span className="w-1.5 h-1.5 rounded-full bg-amber-400"/>}
+            </button>
           </div>
 
           <div className="flex-1 min-h-0">
-            <ResumeChat
-              messages={messages}
-              loading={chatLoading}
-              error={chatError}
-              onSend={handleSend}
-              proposal={proposal}
-              applying={applyLoading}
-              onConfirmProposal={handleConfirmProposal}
-              onCancelProposal={handleCancelProposal}
-              onOpenSettings={() => navigate('/settings')}
-            />
+            {activeTab === 'edit' ? (
+              <div className="dark-card h-full overflow-y-auto p-3">
+                <ResumeContentEditor
+                  content={content}
+                  disabled={frozen}
+                  onChange={handleContentChange}
+                />
+              </div>
+            ) : (
+              <ResumeChat
+                messages={messages}
+                loading={chatLoading}
+                error={chatError}
+                onSend={handleSend}
+                proposal={proposal}
+                applying={applyLoading}
+                onConfirmProposal={handleConfirmProposal}
+                onCancelProposal={handleCancelProposal}
+                onOpenSettings={() => navigate('/settings')}
+              />
+            )}
           </div>
         </div>
 
