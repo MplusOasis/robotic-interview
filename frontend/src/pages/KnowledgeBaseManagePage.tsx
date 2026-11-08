@@ -107,7 +107,7 @@ function StatCard({
         </div>
         <div>
             <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            <p className="text-2xl font-bold text-slate-800 dark:text-white dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.35)]">{value.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-white dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.35)]">{value.toLocaleString()}</p>
         </div>
       </div>
     </motion.div>
@@ -295,7 +295,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
       <div className="flex items-center justify-between mb-8">
         <div>
             <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-            <Database className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.8)]" />
+            <Database className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.8)]" />
             知识库管理
           </h1>
             <p className="text-slate-500 dark:text-slate-400 mt-1">管理您的知识库文件，查看使用统计</p>
@@ -325,14 +325,14 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
             label="知识库总数"
             value={stats.totalCount}
             color="bg-primary-500"
-            glow="dark:shadow-[0_0_20px_-4px_rgba(168,85,247,0.8)]"
+            glow="dark:shadow-[0_0_20px_-4px_rgb(var(--skin-accent-4)/0.8)]"
           />
           <StatCard
             icon={MessageSquare}
             label="总提问次数"
             value={stats.totalQuestionCount}
             color="bg-indigo-500"
-            glow="dark:shadow-[0_0_20px_-4px_rgba(38,139,255,0.8)]"
+            glow="dark:shadow-[0_0_20px_-4px_rgb(var(--skin-accent-2)/0.8)]"
           />
           <StatCard
             icon={Eye}
@@ -361,7 +361,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                   setSelectedVectorStatus('');
                 }}
                 placeholder="搜索知识库名称..."
-                className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-[rgba(104,85,255,0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 dark:focus:border-neon-purple/60 focus:border-transparent bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md text-slate-900 dark:text-white transition-all"
+                className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 dark:focus:border-neon-purple/60 focus:border-transparent bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md text-slate-900 dark:text-white transition-all"
               />
             </div>
           </form>
@@ -375,7 +375,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                 setSearchKeyword('');
                 setSelectedCategory(null);
               }}
-              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgba(104,85,255,0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
+              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
             >
               <option value="time">按时间排序</option>
               <option value="size">按大小排序</option>
@@ -394,7 +394,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                 setSearchKeyword('');
                 setSelectedVectorStatus('');
               }}
-              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgba(104,85,255,0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
+              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
             >
               <option value="">全部分类</option>
               {categories.map((cat) => (
@@ -416,7 +416,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                 setSearchKeyword('');
                 setSelectedCategory(null);
               }}
-              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgba(104,85,255,0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
+              className="appearance-none pl-4 pr-10 py-2 border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-neon-purple/30 bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md text-slate-900 dark:text-white cursor-pointer transition-all"
             >
               <option value="">全部状态</option>
               <option value="PENDING">待处理</option>
@@ -439,21 +439,21 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
         ) : knowledgeBases.length === 0 ? (
           <div className="text-center py-20">
             <div className="relative w-24 h-24 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full border border-dashed border-[rgba(104,85,255,0.5)] dark:animate-[spin-slow_14s_linear_infinite]" />
-              <div className="absolute inset-2 rounded-full border border-[rgba(0,217,255,0.3)]" />
-              <HardDrive className="absolute inset-0 m-auto w-10 h-10 text-slate-300 dark:text-neon-cyan dark:drop-shadow-[0_0_12px_rgba(0,217,255,0.7)]" />
+              <div className="absolute inset-0 rounded-full border border-dashed border-[rgb(var(--skin-accent)/0.5)] dark:animate-[spin-slow_14s_linear_infinite]" />
+              <div className="absolute inset-2 rounded-full border border-[rgb(var(--skin-accent-3)/0.3)]" />
+              <HardDrive className="absolute inset-0 m-auto w-10 h-10 text-slate-300 dark:text-neon-cyan dark:drop-shadow-[0_0_12px_rgb(var(--skin-accent-3)/0.7)]" />
             </div>
               <p className="text-slate-500 dark:text-slate-400">暂无知识库</p>
             <button
               onClick={onUpload}
-              className="mt-4 text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgba(0,217,255,0.5)] hover:text-primary-600 transition-colors"
+              className="mt-4 text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgb(var(--skin-accent-3)/0.5)] hover:text-primary-600 transition-colors"
             >
               上传第一个知识库
             </button>
           </div>
         ) : (
           <table className="w-full">
-              <thead className="bg-slate-50 dark:bg-[rgba(15,25,58,0.7)] border-b border-slate-100 dark:border-[rgba(104,85,255,0.14)]">
+              <thead className="bg-slate-50 dark:bg-[rgb(var(--skin-surface-deep)/0.7)] border-b border-slate-100 dark:border-[rgb(var(--skin-accent)/0.14)]">
               <tr>
                   <th className="text-left px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
                   名称
@@ -485,11 +485,11 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="border-b border-slate-50 dark:border-[rgba(104,85,255,0.1)] hover:bg-slate-50 dark:hover:bg-[rgba(40,58,112,0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgba(104,85,255,0.45)] transition-all duration-300"
+                  className="border-b border-slate-50 dark:border-[rgb(var(--skin-accent)/0.1)] hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgb(var(--skin-accent)/0.45)] transition-all duration-300"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-slate-400 dark:text-neon-purple dark:drop-shadow-[0_0_6px_rgba(168,85,247,0.6)]" />
+                      <FileText className="w-5 h-5 text-slate-400 dark:text-neon-purple dark:drop-shadow-[0_0_6px_rgb(var(--skin-accent-4)/0.6)]" />
                       <div>
                           <p className="font-medium text-slate-800 dark:text-white">{kb.name}</p>
                           <p className="text-xs text-slate-400 dark:text-slate-500">{kb.originalFilename}</p>
@@ -553,7 +553,7 @@ export default function KnowledgeBaseManagePage({ onUpload, onChat }: KnowledgeB
                         >
                           {kb.category ? (
                               <span
-                                  className="px-2 py-1 bg-slate-100 dark:bg-[rgba(104,85,255,0.15)] dark:border dark:border-[rgba(104,85,255,0.3)] text-slate-600 dark:text-slate-200 rounded text-sm">
+                                  className="px-2 py-1 bg-slate-100 dark:bg-[rgb(var(--skin-accent)/0.15)] dark:border dark:border-[rgb(var(--skin-accent)/0.3)] text-slate-600 dark:text-slate-200 rounded text-sm">
                               {kb.category}
                             </span>
                           ) : (

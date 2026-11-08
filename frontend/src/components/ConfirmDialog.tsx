@@ -31,7 +31,7 @@ export default function ConfirmDialog({
 
   const variantStyles = {
     danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
-    primary: 'bg-gradient-to-r from-neon-purple via-primary-500 to-neon-blue hover:opacity-95 hover:shadow-[0_0_24px_-6px_rgba(104,85,255,0.8)]',
+    primary: 'bg-gradient-to-r from-neon-purple via-primary-500 to-neon-blue hover:opacity-95 hover:shadow-[0_0_24px_-6px_rgb(var(--skin-accent)/0.8)]',
     warning: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
   };
 
@@ -55,7 +55,7 @@ export default function ConfirmDialog({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="dark-card rounded-2xl max-w-md w-full p-6 dark:shadow-[0_0_60px_-16px_rgba(104,85,255,0.5)]"
+              className="dark-card rounded-2xl max-w-md w-full p-6 dark:shadow-[0_0_60px_-16px_rgb(var(--skin-accent)/0.5)]"
             >
               {/* 标题 */}
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">

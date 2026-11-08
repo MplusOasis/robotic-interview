@@ -132,10 +132,10 @@ export default function InterviewPanel({
                 <Line
                     type="monotone"
                     dataKey="score"
-                    stroke="#6366f1"
+                    stroke="rgb(var(--skin-accent))"
                   strokeWidth={3}
-                  dot={{ fill: '#6366f1', strokeWidth: 2, r: 5 }}
-                  activeDot={{ r: 8, fill: '#6366f1' }}
+                  dot={{ fill: 'rgb(var(--skin-accent))', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 8, fill: 'rgb(var(--skin-accent))' }}
                 />
               </LineChart>
             </ResponsiveContainer>

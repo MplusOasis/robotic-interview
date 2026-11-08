@@ -81,6 +81,8 @@ docker compose -f docker-compose.dev.yml up -d
 - 页面放在 `frontend/src/pages/`，可复用 UI 放在 `frontend/src/components/`。
 - 路由常量放在 `frontend/src/constants/routes.ts`。
 - 组件交互优先使用现有设计语言和 `lucide-react` 图标。
+- 颜色统一取 `frontend/src/index.css` 的皮肤变量（`--skin-accent*`、`--skin-surface*`）。组件里不要写死 `rgba(104,85,255,...)` 或 `#6855ff`，需要透明度时用 `dark:bg-[rgb(var(--skin-surface)_/_0.55)]`，否则切换页面风格不会变色。
+- 新增页面风格：`src/constants/themeSkin.ts` 加一项元信息，`index.css` 加一个 `html[data-skin='xxx']` 变量块；侧边栏的 `ThemeSkinSwitcher` 会自动列出，无需改组件。
 
 ## Testing
 

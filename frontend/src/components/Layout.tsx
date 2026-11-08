@@ -4,6 +4,7 @@ import {BookOpen, Calendar, ChevronRight, Database, FileStack, LogOut, MessageSq
 import {useTheme} from '../hooks/useTheme';
 import {useState} from 'react';
 import UnifiedInterviewModal, {UnifiedInterviewConfig} from './UnifiedInterviewModal';
+import ThemeSkinSwitcher from './ThemeSkinSwitcher';
 import {ROUTES} from '../constants/routes';
 import {useAuth} from '../contexts/AuthContext';
 
@@ -149,9 +150,9 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen">
       {/* 左侧边栏：深蓝半透明玻璃质感 */}
-      <aside className="w-64 bg-white/90 dark:bg-[#0b1430]/80 backdrop-blur-2xl border-r border-slate-100 dark:border-[rgba(104,85,255,0.14)] fixed h-screen left-0 top-0 z-50 flex flex-col dark:shadow-[8px_0_40px_-16px_rgba(3,8,30,0.9)]">
+      <aside className="w-64 bg-white/90 dark:bg-[var(--skin-navy)]/80 backdrop-blur-2xl border-r border-slate-100 dark:border-[rgb(var(--skin-accent)/0.14)] fixed h-screen left-0 top-0 z-50 flex flex-col dark:shadow-[8px_0_40px_-16px_rgb(var(--skin-shadow)/0.9)]">
         {/* Logo */}
-        <div className="p-6 border-b border-slate-100 dark:border-[rgba(104,85,255,0.12)] flex items-center justify-between">
+        <div className="p-6 border-b border-slate-100 dark:border-[rgb(var(--skin-accent)/0.12)] flex items-center justify-between">
           <Link to="/history" className="flex items-center gap-3 group">
             <div className="w-10 h-10 neon-icon-box rounded-xl flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-105 group-hover:rotate-6">
               <Sparkles className="w-5 h-5" />
@@ -163,11 +164,12 @@ export default function Layout() {
           </Link>
         </div>
 
-        {/* 主题切换按钮 */}
-        <div className="px-4 pb-2">
+        {/* 外观：页面风格 + 明暗模式 */}
+        <div className="px-4 pb-2 space-y-2">
+          <ThemeSkinSwitcher />
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-[rgba(25,39,82,0.5)] dark:border dark:border-[rgba(104,85,255,0.2)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgba(40,58,112,0.6)] dark:hover:border-[rgba(104,85,255,0.4)] transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-[rgb(var(--skin-surface)/0.5)] dark:border dark:border-[rgb(var(--skin-accent)/0.2)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.6)] dark:hover:border-[rgb(var(--skin-accent)/0.4)] transition-all duration-200"
           >
             {theme === 'dark' ? (
               <>
@@ -203,14 +205,14 @@ export default function Layout() {
                         to={item.path}
                         className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 dark:hover:translate-x-1
                           ${active
-                            ? 'bg-primary-50 dark:bg-[rgba(20,31,69,0.9)] dark:bg-gradient-to-r dark:from-neon-purple/20 dark:via-primary-500/15 dark:to-neon-blue/10 text-primary-600 dark:text-white dark:shadow-[inset_0_0_0_1px_rgba(104,85,255,0.4),0_0_24px_-8px_rgba(104,85,255,0.6)]'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[rgba(40,58,112,0.45)] hover:text-slate-900 dark:hover:text-white'
+                            ? 'bg-primary-50 dark:bg-[rgb(var(--skin-surface-active)/0.9)] dark:bg-gradient-to-r dark:from-neon-purple/20 dark:via-primary-500/15 dark:to-neon-blue/10 text-primary-600 dark:text-white dark:shadow-[inset_0_0_0_1px_rgb(var(--skin-accent)/0.4),0_0_24px_-8px_rgb(var(--skin-accent)/0.6)]'
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)] hover:text-slate-900 dark:hover:text-white'
                           }`}
                       >
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300
                           ${active
-                            ? 'bg-primary-100 dark:neon-icon-box dark:text-white dark:shadow-[0_0_14px_-2px_rgba(104,85,255,0.8)] text-primary-600'
-                            : 'bg-slate-100 dark:bg-[rgba(25,39,82,0.7)] text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-[rgba(40,58,112,0.7)] group-hover:text-slate-700 dark:group-hover:text-white'
+                            ? 'bg-primary-100 dark:neon-icon-box dark:text-white dark:shadow-[0_0_14px_-2px_rgb(var(--skin-accent)/0.8)] text-primary-600'
+                            : 'bg-slate-100 dark:bg-[rgb(var(--skin-surface)/0.7)] text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-[rgb(var(--skin-surface-hi)/0.7)] group-hover:text-slate-700 dark:group-hover:text-white'
                           }`}
                         >
                           <item.icon className="w-5 h-5" />
@@ -225,7 +227,7 @@ export default function Layout() {
                             </span>
                           )}
                         </div>
-                        {active && <ChevronRight className="w-4 h-4 text-primary-400 dark:text-neon-cyan dark:drop-shadow-[0_0_6px_rgba(0,217,255,0.8)]" />}
+                        {active && <ChevronRight className="w-4 h-4 text-primary-400 dark:text-neon-cyan dark:drop-shadow-[0_0_6px_rgb(var(--skin-accent-3)/0.8)]" />}
                       </Link>
                     );
                   })}
@@ -236,9 +238,9 @@ export default function Layout() {
         </nav>
 
         {/* 底部信息：当前用户 + 退出登录 */}
-        <div className="p-4 border-t border-slate-100 dark:border-[rgba(104,85,255,0.12)] space-y-3">
+        <div className="p-4 border-t border-slate-100 dark:border-[rgb(var(--skin-accent)/0.12)] space-y-3">
           <div className="flex items-center gap-3 px-3">
-            <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-gradient-to-br dark:from-neon-purple/40 dark:to-neon-blue/40 dark:shadow-[0_0_14px_-4px_rgba(104,85,255,0.8)] text-primary-600 dark:text-white flex items-center justify-center text-sm font-semibold uppercase shrink-0">
+            <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-gradient-to-br dark:from-neon-purple/40 dark:to-neon-blue/40 dark:shadow-[0_0_14px_-4px_rgb(var(--skin-accent)/0.8)] text-primary-600 dark:text-white flex items-center justify-center text-sm font-semibold uppercase shrink-0">
               {(user?.username ?? '?').slice(0, 1)}
             </div>
             <div className="flex-1 min-w-0">
@@ -259,8 +261,8 @@ export default function Layout() {
               <LogOut className="w-4 h-4" />
             </button>
           </div>
-          <div className="px-3 py-2 bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-neon-purple/15 dark:via-primary-500/10 dark:to-neon-blue/15 dark:border dark:border-[rgba(104,85,255,0.2)] rounded-xl">
-            <p className="text-xs text-primary-600 dark:text-neon-cyan dark:drop-shadow-[0_0_6px_rgba(0,217,255,0.4)] font-medium">AI 面试助手 v1.0</p>
+          <div className="px-3 py-2 bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-neon-purple/15 dark:via-primary-500/10 dark:to-neon-blue/15 dark:border dark:border-[rgb(var(--skin-accent)/0.2)] rounded-xl">
+            <p className="text-xs text-primary-600 dark:text-neon-cyan dark:drop-shadow-[0_0_6px_rgb(var(--skin-accent-3)/0.4)] font-medium">AI 面试助手 v1.0</p>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Powered by AI</p>
           </div>
         </div>

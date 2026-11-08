@@ -181,7 +181,7 @@ export default function KnowledgeBaseInterviewLandingPage() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-            <BookOpen className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.8)]" />
+            <BookOpen className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.8)]" />
             知识库面试
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
@@ -238,10 +238,10 @@ export default function KnowledgeBaseInterviewLandingPage() {
         <div className="dark-card flex flex-col items-center justify-center min-h-[360px] text-slate-400 gap-4 overflow-hidden relative">
           {/* 科技感数据库光环视觉 */}
           <div className="relative w-32 h-32 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border border-dashed border-[rgba(104,85,255,0.5)] dark:animate-[spin-slow_16s_linear_infinite]" />
-            <div className="absolute inset-3 rounded-full border border-[rgba(0,217,255,0.35)] dark:animate-[spin-slow_10s_linear_infinite_reverse]" />
-            <div className="absolute inset-6 rounded-full bg-[radial-gradient(circle,rgba(104,85,255,0.35),transparent_70%)] dark:animate-[neon-breathe_5s_ease-in-out_infinite]" />
-            <Database className="w-10 h-10 relative dark:text-neon-cyan dark:drop-shadow-[0_0_14px_rgba(0,217,255,0.8)]" />
+            <div className="absolute inset-0 rounded-full border border-dashed border-[rgb(var(--skin-accent)/0.5)] dark:animate-[spin-slow_16s_linear_infinite]" />
+            <div className="absolute inset-3 rounded-full border border-[rgb(var(--skin-accent-3)/0.35)] dark:animate-[spin-slow_10s_linear_infinite_reverse]" />
+            <div className="absolute inset-6 rounded-full bg-[radial-gradient(circle,rgb(var(--skin-accent)/0.35),transparent_70%)] dark:animate-[neon-breathe_5s_ease-in-out_infinite]" />
+            <Database className="w-10 h-10 relative dark:text-neon-cyan dark:drop-shadow-[0_0_14px_rgb(var(--skin-accent-3)/0.8)]" />
           </div>
           <p className="text-sm dark:text-slate-400">
             {keyword.trim() ? '没有匹配的知识库' : '暂无已完成知识库，先上传并等待向量化完成'}

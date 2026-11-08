@@ -176,10 +176,10 @@ export default function InterviewHubPage() {
                     className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left neon-border-flow
                       ${selected
                         ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                        : 'border-slate-200 dark:border-[rgba(104,85,255,0.2)] bg-white dark:bg-[rgba(25,39,82,0.4)] hover:border-slate-300 dark:hover:border-[rgba(104,85,255,0.5)]'
+                        : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] hover:border-slate-300 dark:hover:border-[rgb(var(--skin-accent)/0.5)]'
                       }`}
                   >
-                    <Icon className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${selected ? 'text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgba(0,217,255,0.8)]' : 'text-slate-400'}`} />
+                    <Icon className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${selected ? 'text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgb(var(--skin-accent-3)/0.8)]' : 'text-slate-400'}`} />
                     <div className="min-w-0">
                       <p className={`font-semibold text-sm flex items-center gap-2 ${selected ? 'text-primary-700 dark:text-primary-300' : 'text-slate-900 dark:text-white'}`}>
                         <span>{opt.label}</span>
@@ -220,11 +220,11 @@ export default function InterviewHubPage() {
                       className={`flex items-center gap-2.5 p-3 rounded-xl border-2 transition-all duration-200 text-left neon-border-flow
                         ${selected
                           ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                          : 'border-slate-200 dark:border-[rgba(104,85,255,0.2)] bg-white dark:bg-[rgba(25,39,82,0.4)] hover:border-slate-300 dark:hover:border-[rgba(104,85,255,0.5)]'
+                          : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] hover:border-slate-300 dark:hover:border-[rgb(var(--skin-accent)/0.5)]'
                         }`}
                     >
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0 transition-transform duration-300 ${
-                        selected ? skill.display?.iconBg || 'bg-primary-100 dark:bg-primary-900/50 dark:shadow-[0_0_12px_-2px_rgba(104,85,255,0.8)]' : 'bg-slate-100 dark:bg-[rgba(15,25,58,0.7)]'
+                        selected ? skill.display?.iconBg || 'bg-primary-100 dark:bg-primary-900/50 dark:shadow-[0_0_12px_-2px_rgb(var(--skin-accent)/0.8)]' : 'bg-slate-100 dark:bg-[rgb(var(--skin-surface-deep)/0.7)]'
                       }`}>
                         {IconComponent
                           ? <IconComponent className={`w-4 h-4 ${selected ? (skill.display?.iconColor || 'text-primary-600') : 'text-slate-500 dark:text-slate-400'}`} />
@@ -245,11 +245,11 @@ export default function InterviewHubPage() {
                   className={`flex items-center gap-2.5 p-3 rounded-xl border-2 border-dashed transition-all duration-200 text-left
                     ${config.isCustomSkill
                       ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                      : 'border-slate-200 dark:border-[rgba(104,85,255,0.25)] hover:border-primary-300 dark:hover:border-[rgba(104,85,255,0.55)]'
+                      : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] hover:border-primary-300 dark:hover:border-[rgb(var(--skin-accent)/0.55)]'
                     }`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    config.isCustomSkill ? 'bg-primary-100 dark:bg-primary-900/50 dark:shadow-[0_0_12px_-2px_rgba(104,85,255,0.8)]' : 'bg-slate-100 dark:bg-[rgba(15,25,58,0.7)]'
+                    config.isCustomSkill ? 'bg-primary-100 dark:bg-primary-900/50 dark:shadow-[0_0_12px_-2px_rgb(var(--skin-accent)/0.8)]' : 'bg-slate-100 dark:bg-[rgb(var(--skin-surface-deep)/0.7)]'
                   }`}>
                     {(() => {
                       const CustomIcon = getSkillIcon(CUSTOM_SKILL_ID);
@@ -275,14 +275,14 @@ export default function InterviewHubPage() {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="space-y-3 bg-slate-50 dark:bg-[rgba(11,20,48,0.6)] backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-[rgba(104,85,255,0.18)]">
+                <div className="space-y-3 bg-slate-50 dark:bg-[rgb(var(--skin-navy-rgb)/0.6)] backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.18)]">
                   <textarea
                     value={config.customJdText}
                     onChange={e => config.setCustomJdText(e.target.value)}
                     placeholder="粘贴目标岗位的职位描述（JD），至少 50 字..."
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[rgba(104,85,255,0.25)]
-                      bg-white dark:bg-[rgba(15,25,58,0.6)] text-sm text-slate-900 dark:text-white
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)]
+                      bg-white dark:bg-[rgb(var(--skin-surface-deep)/0.6)] text-sm text-slate-900 dark:text-white
                       placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2
                       focus:ring-primary-500/50 dark:focus:ring-neon-purple/30 focus:border-primary-400 dark:focus:border-neon-purple/60 transition-shadow"
                   />
@@ -333,10 +333,10 @@ export default function InterviewHubPage() {
                     className={`py-3 px-4 rounded-xl border-2 transition-all duration-200 text-center neon-border-flow
                       ${selected
                         ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                        : 'border-slate-200 dark:border-[rgba(104,85,255,0.2)] bg-white dark:bg-[rgba(25,39,82,0.4)] hover:border-slate-300 dark:hover:border-[rgba(104,85,255,0.5)]'
+                        : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] hover:border-slate-300 dark:hover:border-[rgb(var(--skin-accent)/0.5)]'
                       }`}
                   >
-                    <p className={`text-sm font-semibold ${selected ? 'text-primary-700 dark:text-white dark:drop-shadow-[0_0_6px_rgba(104,85,255,0.6)]' : 'text-slate-700 dark:text-slate-300'}`}>
+                    <p className={`text-sm font-semibold ${selected ? 'text-primary-700 dark:text-white dark:drop-shadow-[0_0_6px_rgb(var(--skin-accent)/0.6)]' : 'text-slate-700 dark:text-slate-300'}`}>
                       {opt.label}
                     </p>
                     <p className="text-xs text-slate-400">{opt.desc}</p>
@@ -399,8 +399,8 @@ export default function InterviewHubPage() {
                           onClick={() => config.setQuestionCount(n)}
                           className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all
                             ${config.questionCount === n
-                              ? 'bg-primary-500 text-white shadow-sm dark:shadow-[0_0_16px_-4px_rgba(104,85,255,0.9)]'
-                              : 'bg-slate-100 dark:bg-[rgba(25,39,82,0.5)] dark:border dark:border-[rgba(104,85,255,0.18)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgba(40,58,112,0.6)]'
+                              ? 'bg-primary-500 text-white shadow-sm dark:shadow-[0_0_16px_-4px_rgb(var(--skin-accent)/0.9)]'
+                              : 'bg-slate-100 dark:bg-[rgb(var(--skin-surface)/0.5)] dark:border dark:border-[rgb(var(--skin-accent)/0.18)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.6)]'
                             }`}
                         >
                           {n} 题
@@ -493,12 +493,12 @@ export default function InterviewHubPage() {
                       navigate(`/voice-interview/${item.voiceSessionId}/evaluation`);
                     }
                   }}
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-[rgba(40,58,112,0.45)] dark:hover:shadow-[inset_0_0_24px_-12px_rgba(104,85,255,0.4)] transition-all duration-300 cursor-pointer group"
+                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)] dark:hover:shadow-[inset_0_0_24px_-12px_rgb(var(--skin-accent)/0.4)] transition-all duration-300 cursor-pointer group"
                 >
                   {/* 类型图标 */}
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 ${
                     item.type === 'text'
-                      ? 'bg-blue-100 dark:bg-neon-blue/15 dark:border dark:border-neon-blue/30 text-blue-600 dark:text-neon-cyan dark:shadow-[0_0_14px_-4px_rgba(38,139,255,0.7)]'
+                      ? 'bg-blue-100 dark:bg-neon-blue/15 dark:border dark:border-neon-blue/30 text-blue-600 dark:text-neon-cyan dark:shadow-[0_0_14px_-4px_rgb(var(--skin-accent-2)/0.7)]'
                       : 'bg-emerald-100 dark:bg-glow-success/15 dark:border dark:border-glow-success/30 text-emerald-600 dark:text-glow-success dark:shadow-[0_0_14px_-4px_rgba(0,214,160,0.6)]'
                   }`}>
                     {item.type === 'text' ? <FileText className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
