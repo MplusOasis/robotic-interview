@@ -1,0 +1,36 @@
+# ============================================================
+# 生产环境配置（BYOK 阶段一）
+# 启动时必须显式指定：--spring.profiles.active=prod
+# ============================================================
+app:
+  auth:
+    # 生产必须走 HTTPS，Cookie 强制 Secure
+    jwt:
+      cookie-secure: true
+      cookie-same-site: Lax
+    # 生产默认关闭自助注册；如需开放，显式设置 APP_AUTH_REGISTRATION_ENABLED=true
+    registration-enabled: ${APP_AUTH_REGISTRATION_ENABLED:false}
+  ai:
+    # 关键：阶段一尚未完成用户级模型路由，生产禁止普通用户使用开发者全局 Key
+    platform-global-key-allowed: ${APP_AI_PLATFORM_GLOBAL_KEY_ALLOWED:false}
+
+# 生产不暴露接口文档
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: INFO
+    interview.guide: INFO

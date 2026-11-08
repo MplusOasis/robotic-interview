@@ -1,0 +1,230 @@
+package interview.guide.modules.usercredential.service;
+
+import interview.guide.common.ai.AiExecutionContext;
+import interview.guide.common.ai.UserCredentialChangedEvent;
+import interview.guide.common.config.ByokProperties;
+import interview.guide.common.config.LlmProviderProperties;
+import interview.guide.common.exception.BusinessException;
+import interview.guide.common.exception.ErrorCode;
+import interview.guide.common.security.CurrentUserProvider;
+import interview.guide.modules.llmprovider.service.ApiKeyEncryptionService;
+import interview.guide.modules.usercredential.dto.CredentialStatusDTO;
+import interview.guide.modules.usercredential.dto.SaveCredentialRequest;
+import interview.guide.modules.usercredential.dto.UserCredentialDTO;
+import interview.guide.modules.usercredential.model.CredentialStatus;
+import interview.guide.modules.usercredential.model.UserLlmCredentialEntity;
+import interview.guide.modules.usercredential.repository.UserLlmCredentialRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+/**
+ * 用户级模型上下文解析规则验证（Chat 与 Embedding 分别解析）。
+ *
+ * <p>这是 BYOK 阶段二「不允许回退平台全局 Key」的核心行为测试。</p>
+ */
+@ExtendWith(MockitoExtension.class)
+@DisplayName("用户级 AI 上下文解析")
+class AiCredentialResolutionTest {
+
+  private static final Long USER_ID = 7L;
+  private static final String DEEPSEEK = "deepseek";
+  private static final String DASHSCOPE = "dashscope";
+
+  @Mock
+  private UserLlmCredentialRepository repository;
+  @Mock
+  private ApiKeyEncryptionService encryptionService;
+  @Mock
+  private CurrentUserProvider currentUserProvider;
+  @Mock
+  private ApplicationEventPublisher eventPublisher;
+
+  private UserCredentialService service;
+  private final Map<String, UserLlmCredentialEntity> store = new HashMap<>();
+
+  @BeforeEach
+  void setUp() {
+    ByokProperties byok = new ByokProperties();
+    LlmProviderProperties llm = new LlmProviderProperties();
+    llm.setDefaultProvider(DASHSCOPE);
+    llm.setDefaultEmbeddingProvider(DASHSCOPE);
+    llm.setEmbeddingDimensions(1024);
+
+    Map<String, LlmProviderProperties.ProviderConfig> providers = new HashMap<>();
+    providers.put(DEEPSEEK, provider("https://api.deepseek.com", "deepseek-chat", null, false));
+    providers.put(DASHSCOPE,
+        provider("https://dashscope.aliyuncs.com/compatible-mode", "qwen-plus", "text-embedding-v3", true));
+    providers.put("glm", provider("https://open.bigmodel.cn/api/paas/v4", "glm-4", "embedding-3", true));
+    llm.setProviders(providers);
+
+    service = new UserCredentialService(repository, encryptionService,
+        new ProviderPresetRegistry(byok, llm), byok, llm, currentUserProvider, eventPublisher);
+
+    // 简单的内存仓储行为
+    org.mockito.Mockito.lenient().when(repository.findByUserIdAndProviderKey(any(), any()))
+        .thenAnswer(inv -> Optional.ofNullable(store.get(inv.getArgument(1))));
+    org.mockito.Mockito.lenient().when(repository.findAllByUserIdOrderByUpdatedAtDesc(any()))
+        .thenAnswer(inv -> new ArrayList<>(store.values()));
+    org.mockito.Mockito.lenient().when(repository.findByUserIdAndChatEnabledTrueOrderByUpdatedAtDesc(any()))
+        .thenAnswer(inv -> store.values().stream()
+            .filter(e -> Boolean.TRUE.equals(e.getChatEnabled())).toList());
+    org.mockito.Mockito.lenient().when(repository.findByUserIdAndEmbeddingEnabledTrueOrderByUpdatedAtDesc(any()))
+        .thenAnswer(inv -> store.values().stream()
+            .filter(e -> Boolean.TRUE.equals(e.getEmbeddingEnabled())).toList());
+    org.mockito.Mockito.lenient().when(repository.save(any())).thenAnswer(inv -> {
+      UserLlmCredentialEntity e = inv.getArgument(0);
+      if (e.getUpdatedAt() == null) {
+        e.setUpdatedAt(LocalDateTime.now());
+      }
+      store.put(e.getProviderKey(), e);
+      return e;
+    });
+    org.mockito.Mockito.lenient().when(encryptionService.encrypt(any()))
+        .thenAnswer(inv -> new ApiKeyEncryptionService.EncryptedValue("cipher", "nonce"));
+    org.mockito.Mockito.lenient().when(encryptionService.decrypt(any(), any())).thenReturn("sk-plaintext-key");
+  }
+
+  private LlmProviderProperties.ProviderConfig provider(String baseUrl, String model,
+                                                       String embeddingModel, boolean supportsEmbedding) {
+    LlmProviderProperties.ProviderConfig config = new LlmProviderProperties.ProviderConfig();
+    config.setBaseUrl(baseUrl);
+    config.setModel(model);
+    config.setEmbeddingModel(embeddingModel);
+    config.setSupportsEmbedding(supportsEmbedding);
+    return config;
+  }
+
+  @Test
+  @DisplayName("没有任何凭证时 Chat 上下文解析失败，错误码为 USER_CREDENTIAL_NOT_CONFIGURED")
+  void noCredentialRejectsChat() {
+    assertThatThrownBy(() -> service.chatContextForUser(USER_ID, null))
+        .isInstanceOf(BusinessException.class)
+        .extracting(e -> ((BusinessException) e).getCode())
+        .isEqualTo(ErrorCode.USER_CREDENTIAL_NOT_CONFIGURED.getCode());
+  }
+
+  @Test
+  @DisplayName("只有 DeepSeek 凭证时 Embedding 解析失败（需单独配置 DashScope），错误码明确")
+  void deepseekOnlyCannotDoEmbedding() {
+    service.save(USER_ID, new SaveCredentialRequest(DEEPSEEK, "sk-deepseek-0123456789", "deepseek-chat"));
+
+    assertThatThrownBy(() -> service.embeddingContextForUser(USER_ID))
+        .isInstanceOf(BusinessException.class)
+        .extracting(e -> ((BusinessException) e).getCode())
+        .isEqualTo(ErrorCode.EMBEDDING_CREDENTIAL_NOT_CONFIGURED.getCode());
+  }
+
+  @Test
+  @DisplayName("DashScope 凭证可同时用于 Chat 与固定 1024 维 Embedding")
+  void dashscopeCoversChatAndEmbedding() {
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+
+    AiExecutionContext chat = service.chatContextForUser(USER_ID, null);
+    AiExecutionContext embedding = service.embeddingContextForUser(USER_ID);
+
+    assertThat(chat.providerKey()).isEqualTo(DASHSCOPE);
+    assertThat(chat.modelName()).isEqualTo("qwen-plus");
+    assertThat(embedding.providerKey()).isEqualTo(DASHSCOPE);
+    // Embedding 模型由平台固定，用户不可修改
+    assertThat(embedding.modelName()).isEqualTo("text-embedding-v3");
+    assertThat(service.status(USER_ID).embeddingDimensions()).isEqualTo(1024);
+  }
+
+  @Test
+  @DisplayName("保存凭证时 credentialVersion 递增，并发布凭证变更事件")
+  void saveBumpsVersionAndPublishesEvent() {
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+    long first = store.get(DASHSCOPE).getCredentialVersion();
+
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-9876543210", "qwen-plus"));
+    long second = store.get(DASHSCOPE).getCredentialVersion();
+
+    assertThat(second).isGreaterThan(first);
+    verify(eventPublisher, atLeastOnce()).publishEvent(any(UserCredentialChangedEvent.class));
+  }
+
+  @Test
+  @DisplayName("删除凭证会发布事件以清理用户级客户端缓存")
+  void deletePublishesEvent() {
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+    store.get(DASHSCOPE).setStatus(CredentialStatus.ACTIVE.name());
+
+    when(repository.findByUserIdAndProviderKey(USER_ID, DASHSCOPE))
+        .thenReturn(Optional.of(store.get(DASHSCOPE)));
+
+    service.delete(USER_ID, DASHSCOPE);
+
+    verify(eventPublisher, atLeastOnce()).publishEvent(new UserCredentialChangedEvent(USER_ID, DASHSCOPE));
+  }
+
+  @Test
+  @DisplayName("凭证 DTO 不包含密文、nonce 与 Base URL")
+  void dtoHasNoSecretFields() {
+    UserCredentialDTO dto = service.save(USER_ID,
+        new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+
+    assertThat(dto.providerKey()).isEqualTo(DASHSCOPE);
+    assertThat(dto.keyTail()).isEqualTo("6789");
+    // 记录类只暴露白名单字段
+    List<String> components = new ArrayList<>();
+    for (var component : UserCredentialDTO.class.getRecordComponents()) {
+      components.add(component.getName());
+    }
+    assertThat(components).containsExactlyInAnyOrder(
+        "providerKey", "configured", "modelName", "keyTail", "updatedAt", "chatEnabled", "embeddingEnabled");
+  }
+
+  @Test
+  @DisplayName("状态接口分别暴露 Chat / Embedding / 语音就绪状态")
+  void statusReportsEachCapability() {
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+    CredentialStatusDTO status = service.status(USER_ID);
+
+    assertThat(status.chatReady()).isTrue();
+    assertThat(status.embeddingReady()).isTrue();
+    assertThat(status.speechReady()).isTrue();
+    assertThat(status.embeddingModelName()).isEqualTo("text-embedding-v3");
+  }
+
+  @Test
+  @DisplayName("偏好供应商仅在用户确实配置时采纳，否则回退到用户自己的其他凭证")
+  void preferredProviderOnlyWhenConfigured() {
+    service.save(USER_ID, new SaveCredentialRequest(DEEPSEEK, "sk-deepseek-0123456789", "deepseek-chat"));
+
+    AiExecutionContext ctx = service.chatContextForUser(USER_ID, "glm");
+    assertThat(ctx.providerKey()).isEqualTo(DEEPSEEK);
+
+    AiExecutionContext preferred = service.chatContextForUser(USER_ID, DEEPSEEK);
+    assertThat(preferred.providerKey()).isEqualTo(DEEPSEEK);
+  }
+
+  @Test
+  @DisplayName("openChatSecret 只在需要时解密，返回对象 toString 屏蔽 Key")
+  void providerSecretMasksKey() {
+    service.save(USER_ID, new SaveCredentialRequest(DASHSCOPE, "sk-dashscope-0123456789", "qwen-plus"));
+
+    var secret = service.openChatSecret(USER_ID, DASHSCOPE);
+
+    assertThat(secret.apiKey()).isEqualTo("sk-plaintext-key");
+    assertThat(secret.toString()).doesNotContain("sk-plaintext-key").contains("***");
+  }
+}

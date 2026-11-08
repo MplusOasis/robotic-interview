@@ -1,0 +1,553 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@plugin "@tailwindcss/typography";
+
+/* 启用深色模式 - 使用 class 策略 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+/* ============================================================
+ * 设计系统 Token —— Neon Glassmorphism（深海蓝 + 霓虹紫/蓝）
+ * 深海蓝主背景 #070D20 / 侧边栏 #0B1430 / 卡片 rgba(25,39,82,.65)
+ * 主强调 #6855FF / 霓虹紫 #A855F7 / 科技蓝 #268BFF / 电光青 #00D9FF
+ * ============================================================ */
+@theme {
+  /* 主强调色：霓虹紫蓝 */
+  --color-primary-50: #f0efff;
+  --color-primary-100: #e2dfff;
+  --color-primary-200: #c8c2ff;
+  --color-primary-300: #aba1ff;
+  --color-primary-400: #8b79ff;
+  --color-primary-500: #6855ff;
+  --color-primary-600: #5b3df0;
+  --color-primary-700: #4b2ed1;
+  --color-primary-800: #3c26a6;
+  --color-primary-900: #2d1f7a;
+  --color-primary-950: #1a1150;
+
+  /* 语义霓虹色 */
+  --color-neon-purple: #a855f7;
+  --color-neon-blue: #268bff;
+  --color-neon-cyan: #00d9ff;
+  --color-abyss: #070d20;
+  --color-navy: #0b1430;
+  --color-glow-success: #00d6a0;
+  --color-glow-warning: #ffaa32;
+  --color-glow-error: #ff5577;
+
+  /* slate 色阶向深海蓝偏移（700+ 基本只用于暗色场景） */
+  --color-slate-300: #a8b6de;
+  --color-slate-400: #8fa0cc;
+  --color-slate-500: #6e80b4;
+  --color-slate-600: #55679b;
+  --color-slate-700: #31427a;
+  --color-slate-800: rgba(25, 39, 82, 0.72);
+  --color-slate-900: rgba(11, 20, 48, 0.9);
+  --color-slate-950: #070d20;
+
+  /* 统一动效曲线 */
+  --ease-neon: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+}
+
+/* 动态边框角度（用于 conic-gradient 流光边框） */
+@property --neon-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ============================================================
+ * 基础样式
+ * ============================================================ */
+@layer base {
+  html, body, #root {
+    @apply h-full m-0 p-0;
+  }
+
+  html.dark {
+    background-color: #070d20;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: var(--font-sans);
+    @apply bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900;
+    @apply dark:bg-transparent dark:text-slate-50;
+  }
+
+  /* 暗色模式：清除浅色渐变背景图，露出 html 深海蓝底色与光效装饰层 */
+  /* 需 !important：bg-gradient-to-br 位于 utilities 层，优先级高于 base 层 */
+  html.dark body {
+    background-image: none !important;
+  }
+
+  /* ---- 深海蓝动态背景光效（独立装饰层，pointer-events: none） ---- */
+  /* 顶部/边缘缓慢流动的紫蓝光带 + 柔和环境光 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 38% at 12% 2%, rgba(104, 85, 255, 0.30), transparent 62%),
+      radial-gradient(ellipse 48% 32% at 88% 8%, rgba(38, 139, 255, 0.24), transparent 65%),
+      radial-gradient(ellipse 42% 36% at 78% 92%, rgba(168, 85, 247, 0.20), transparent 60%),
+      radial-gradient(ellipse 38% 30% at 18% 96%, rgba(0, 217, 255, 0.14), transparent 65%),
+      radial-gradient(ellipse 60% 50% at 50% 50%, rgba(25, 39, 82, 0.55), transparent 75%);
+    filter: blur(60px);
+    animation: aurora-drift 20s ease-in-out infinite alternate;
+    opacity: 0;
+  }
+  html.dark body::before {
+    opacity: 1;
+  }
+
+  /* 底部科技粒子波浪 */
+  body::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 38vh;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(0, 217, 255, 0.45) 1px, transparent 1.6px),
+      radial-gradient(rgba(104, 85, 255, 0.35) 1px, transparent 1.6px);
+    background-size: 30px 30px, 46px 46px;
+    background-position: 0 0, 15px 23px;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 82%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 82%);
+    animation: particle-wave 16s linear infinite;
+    opacity: 0;
+  }
+  html.dark body::after {
+    opacity: 0.55;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* 背景光效动画：缓慢漂移 */
+@keyframes aurora-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate3d(3%, -2%, 0) rotate(3deg) scale(1.06); }
+  100% { transform: translate3d(-3%, 2%, 0) rotate(-2deg) scale(1.03); }
+}
+
+/* 粒子波浪：缓慢流动 */
+@keyframes particle-wave {
+  0%   { background-position: 0 0, 15px 23px; }
+  100% { background-position: 60px -30px, -31px 69px; }
+}
+
+/* 流光边框旋转 */
+@keyframes neon-angle-spin {
+  to { --neon-angle: 360deg; }
+}
+
+/* 呼吸光效 */
+@keyframes neon-breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 18px -6px rgba(104, 85, 255, 0.55); }
+  50%      { box-shadow: 0 0 32px -4px rgba(104, 85, 255, 0.85), 0 0 48px -8px rgba(0, 217, 255, 0.4); }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+ * 组件层 —— 统一视觉规范
+ * ============================================================ */
+@layer components {
+    /* 玻璃拟态卡片 */
+    .dark-card {
+        @apply rounded-2xl border backdrop-blur-xl;
+        @apply bg-white/85 border-slate-200/70 shadow-lg shadow-slate-200/50;
+        @apply dark:bg-[rgba(25,39,82,0.55)] dark:border-[rgba(104,85,255,0.18)] dark:shadow-[0_8px_40px_-12px_rgba(3,8,30,0.9)];
+    }
+
+    /* 霓虹玻璃卡片：悬停浮动 + 渐变发光边框 + 底部光晕 */
+    .neon-card {
+        @apply relative rounded-2xl border backdrop-blur-xl;
+        @apply bg-white/85 border-slate-200/70 shadow-lg shadow-slate-200/50;
+        @apply dark:bg-[rgba(25,39,82,0.55)] dark:border-[rgba(104,85,255,0.18)] dark:shadow-[0_8px_40px_-12px_rgba(3,8,30,0.9)];
+        transition:
+            transform 0.3s var(--ease-neon),
+            box-shadow 0.3s var(--ease-neon),
+            border-color 0.3s var(--ease-neon);
+    }
+    @media (hover: hover) {
+        .neon-card:hover {
+            @apply dark:border-[rgba(104,85,255,0.55)];
+            transform: translateY(-6px) scale(1.01);
+            box-shadow:
+                0 0 0 1px rgba(104, 85, 255, 0.25),
+                0 20px 50px -16px rgba(104, 85, 255, 0.5),
+                0 12px 40px -18px rgba(0, 217, 255, 0.35);
+        }
+        .neon-card:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+    }
+
+    /* 流光边框（悬停时触发，光线沿边缘缓慢流动） */
+    .neon-border-flow {
+        position: relative;
+    }
+    .neon-border-flow::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: conic-gradient(
+            from var(--neon-angle),
+            transparent 0deg,
+            rgba(104, 85, 255, 0.9) 40deg,
+            rgba(0, 217, 255, 0.9) 80deg,
+            transparent 120deg,
+            transparent 180deg,
+            rgba(168, 85, 247, 0.7) 240deg,
+            transparent 300deg
+        );
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s var(--ease-neon);
+        pointer-events: none;
+    }
+    @media (hover: hover) {
+        .neon-border-flow:hover::before {
+            opacity: 1;
+            animation: neon-angle-spin 5s linear infinite;
+        }
+    }
+
+    /* 重要卡片的常驻低强度呼吸光效 */
+
+    /* 通用输入框 */
+    .dark-input {
+        @apply bg-white/85 dark:bg-[rgba(15,25,58,0.6)] border border-slate-200 dark:border-[rgba(104,85,255,0.2)] text-slate-900 dark:text-slate-100;
+        @apply focus:ring-2 focus:ring-primary-500/25 focus:border-primary-500 dark:focus:ring-neon-purple/30 dark:focus:border-neon-purple/70;
+        @apply transition-all duration-200;
+    }
+
+    /* 通用文字颜色 */
+    .dark-text {
+        @apply text-slate-900 dark:text-[#f4f6ff];
+    }
+
+    .dark-text-muted {
+        @apply text-slate-600 dark:text-[#9aaad0];
+    }
+
+    /* 主按钮：紫蓝青渐变 + 光泽扫过 + 悬浮/按压 */
+    .btn-primary {
+        @apply relative overflow-hidden text-white font-medium;
+        background-image: linear-gradient(120deg, #a855f7 0%, #6855ff 45%, #268bff 100%);
+        @apply shadow-lg shadow-primary-500/30;
+        @apply transition-all duration-300 ease-neon;
+        @apply hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary-500/45;
+        @apply active:translate-y-0 active:scale-[0.97];
+    }
+    .btn-primary::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.38) 50%, transparent 62%);
+        transform: translateX(-130%);
+    }
+    @media (hover: hover) {
+        .btn-primary:hover::after {
+            transform: translateX(130%);
+            transition: transform 0.8s var(--ease-neon);
+        }
+    }
+
+    /* 次要按钮：深蓝玻璃质感 */
+    .btn-secondary {
+        @apply bg-slate-100 dark:bg-[rgba(25,39,82,0.5)] text-slate-700 dark:text-slate-200;
+        @apply hover:bg-slate-200 dark:hover:bg-[rgba(40,58,112,0.6)] dark:hover:border-[rgba(104,85,255,0.4)];
+        @apply active:scale-[0.98];
+        @apply border border-slate-200 dark:border-[rgba(104,85,255,0.22)];
+        @apply backdrop-blur-md transition-all duration-200;
+    }
+
+    /* 状态徽章 */
+    .status-badge {
+        @apply px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase;
+        @apply border backdrop-blur-sm;
+    }
+
+    /* 渐变分数进度条 */
+    /* 图标光晕盒 */
+}
+
+/* ---- @utility：支持 dark: 等变体的原子工具类（Tailwind v4） ---- */
+@utility neon-selected {
+    border-color: rgba(104, 85, 255, 0.65) !important;
+    background-image: linear-gradient(135deg, rgba(104, 85, 255, 0.22), rgba(38, 139, 255, 0.14) 55%, rgba(0, 217, 255, 0.08)) !important;
+    box-shadow:
+        0 0 0 1px rgba(104, 85, 255, 0.35),
+        0 0 28px -8px rgba(104, 85, 255, 0.65),
+        inset 0 0 24px -12px rgba(0, 217, 255, 0.4) !important;
+}
+
+@utility neon-progress {
+    background-image: linear-gradient(90deg, #6855ff, #268bff, #00d9ff);
+    box-shadow: 0 0 12px -2px rgba(38, 139, 255, 0.7);
+}
+
+@utility neon-icon-box {
+    background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(104, 85, 255, 0.9) 50%, rgba(38, 139, 255, 0.9));
+    box-shadow: 0 0 18px -4px rgba(104, 85, 255, 0.75), inset 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================================
+ * 全局微交互：可点击卡片的空间反馈（暗色模式）
+ * 仅对非按钮、无位移工具类的元素生效，避免破坏抽屉/弹窗
+ * ============================================================ */
+@media (hover: hover) {
+  html.dark .cursor-pointer:not(button):not(.btn-primary):not(.btn-secondary):not([class*="translate"]):not([class*="fixed"]):not([role="dialog"]) {
+    transition:
+      transform 0.3s var(--ease-neon),
+      box-shadow 0.3s var(--ease-neon),
+      border-color 0.3s var(--ease-neon);
+  }
+  html.dark .cursor-pointer:not(button):not(.btn-primary):not(.btn-secondary):not([class*="translate"]):not([class*="fixed"]):not([role="dialog"]):hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  html.dark .cursor-pointer:not(button):not(.btn-primary):not(.btn-secondary):not([class*="translate"]):not([class*="fixed"]):not([role="dialog"]):active {
+    transform: translateY(-1px) scale(0.98);
+    transition-duration: 0.15s;
+  }
+}
+
+/* ============================================================
+ * 自定义滚动条
+ * ============================================================ */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  .dark .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(15, 25, 58, 0.6);
+  }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(104, 85, 255, 0.35);
+  }
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(104, 85, 255, 0.55);
+  }
+}
+
+/* ============================================================
+ * React Big Calendar 自定义样式
+ * ============================================================ */
+@layer components {
+  .rbc-calendar {
+    @apply font-sans;
+  }
+
+  .rbc-toolbar {
+    @apply mb-6;
+  }
+
+  .rbc-toolbar button {
+    @apply px-4 py-2 rounded-lg font-medium text-sm;
+    @apply bg-slate-100/80 dark:bg-[rgba(25,39,82,0.6)] text-slate-700 dark:text-slate-200;
+    @apply border border-slate-200/50 dark:border-[rgba(104,85,255,0.2)];
+    @apply hover:bg-slate-200/90 dark:hover:bg-[rgba(40,58,112,0.7)];
+    @apply backdrop-blur-sm;
+    @apply transition-all duration-200;
+  }
+
+  .rbc-toolbar button.rbc-active {
+    @apply bg-primary-600/90 dark:bg-primary-500/90 text-white;
+    @apply border-primary-600/90 dark:border-primary-500/90;
+    @apply shadow-lg shadow-primary-500/25;
+    @apply backdrop-blur-sm;
+  }
+
+  .rbc-toolbar-label {
+    @apply font-display font-bold text-lg text-slate-900 dark:text-white;
+  }
+
+  .rbc-header {
+    @apply py-3 font-display font-semibold text-sm uppercase tracking-wide;
+    @apply bg-slate-50/80 dark:bg-[rgba(25,39,82,0.55)] text-slate-700 dark:text-slate-300;
+    @apply border-b-2 border-slate-200/50 dark:border-[rgba(104,85,255,0.2)];
+    @apply backdrop-blur-sm;
+  }
+
+  .rbc-month-view, .rbc-time-view, .rbc-agenda-view {
+    @apply rounded-xl overflow-hidden;
+    @apply border border-slate-200 dark:border-[rgba(104,85,255,0.18)];
+  }
+
+  .rbc-day-bg, .rbc-time-header-content, .rbc-time-gutter {
+    @apply bg-white dark:bg-slate-900/50;
+  }
+
+  .rbc-off-range-bg {
+    @apply bg-slate-50 dark:bg-slate-950/50;
+  }
+
+  .rbc-today {
+    @apply bg-primary-50/80;
+    @apply dark:bg-primary-950/40;
+    @apply backdrop-blur-sm;
+  }
+
+  .rbc-time-slot {
+    @apply border-slate-100 dark:border-slate-800/50;
+  }
+
+  .rbc-event {
+    @apply rounded-lg shadow-md;
+    @apply transition-all duration-200;
+    @apply hover:shadow-xl hover:shadow-primary-500/25 hover:scale-[1.02];
+    @apply backdrop-blur-sm;
+  }
+
+  .rbc-event-content {
+    @apply font-medium;
+  }
+
+  .rbc-month-row {
+    @apply border-slate-200 dark:border-[rgba(104,85,255,0.14)];
+  }
+
+  .rbc-day-slot .rbc-time-slot {
+    @apply border-slate-100 dark:border-slate-800/30;
+  }
+
+  .rbc-time-view-resources .rbc-time-gutter {
+    @apply bg-slate-50/80 dark:bg-slate-800/30;
+  }
+
+  .rbc-time-header-content {
+    @apply border-slate-200 dark:border-[rgba(104,85,255,0.14)];
+  }
+
+  .rbc-agenda-view table.rbc-agenda-table {
+    @apply border-slate-200 dark:border-[rgba(104,85,255,0.18)];
+    @apply bg-white dark:bg-slate-900/50;
+  }
+
+  .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    @apply border-slate-100 dark:border-slate-800/30;
+    @apply py-3 px-4;
+  }
+
+  .rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell {
+    @apply font-display font-semibold text-slate-700 dark:text-slate-300;
+  }
+
+  .rbc-show-more {
+    @apply font-semibold text-primary-600 dark:text-primary-400;
+    @apply hover:text-primary-700 dark:hover:text-primary-300;
+    @apply transition-colors duration-200;
+  }
+
+  /* 深色模式下日历单元格边框优化 */
+  .dark .rbc-month-view,
+  .dark .rbc-time-view,
+  .dark .rbc-agenda-view {
+    @apply border-[rgba(104,85,255,0.18)];
+  }
+
+  .dark .rbc-header {
+    @apply bg-[rgba(25,39,82,0.55)] text-slate-200 border-[rgba(104,85,255,0.2)];
+  }
+
+  .dark .rbc-day-bg {
+    @apply bg-slate-900/30;
+  }
+
+  .dark .rbc-off-range-bg {
+    @apply bg-slate-950/50 text-slate-500;
+  }
+
+  .dark .rbc-today {
+    @apply bg-primary-950/30;
+  }
+
+  .dark .rbc-month-row {
+    @apply border-[rgba(104,85,255,0.14)];
+  }
+
+  .dark .rbc-time-slot {
+    @apply border-slate-800/30;
+  }
+
+  .dark .rbc-time-header-content {
+    @apply bg-slate-800/40 border-[rgba(104,85,255,0.14)];
+  }
+
+  .dark .rbc-time-gutter {
+    @apply bg-slate-800/40;
+  }
+
+  .dark .rbc-agenda-view table.rbc-agenda-table {
+    @apply bg-slate-900/30 border-[rgba(104,85,255,0.18)];
+  }
+
+  .dark .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    @apply border-slate-800/30;
+  }
+}
+
+/* ============================================================
+ * 无障碍：尊重减少动态效果偏好
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none !important;
+  }
+  .neon-border-flow:hover::before {
+    animation: none !important;
+    opacity: 0.8;
+  }
+  .btn-primary::after {
+    display: none;
+  }
+}
