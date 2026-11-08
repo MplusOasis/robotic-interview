@@ -112,7 +112,7 @@ export default function KnowledgeBaseCard({
       className="neon-card neon-border-flow flex flex-col p-5"
     >
       <div className="flex items-start gap-3 mb-4">
-        <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-gradient-to-br dark:from-neon-purple/35 dark:to-neon-blue/30 dark:shadow-[0_0_16px_-4px_rgba(104,85,255,0.8)] text-primary-500 dark:text-neon-cyan flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110 hover:rotate-6">
+        <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-gradient-to-br dark:from-neon-purple/35 dark:to-neon-blue/30 dark:shadow-[0_0_16px_-4px_rgb(var(--skin-accent)/0.8)] text-primary-500 dark:text-neon-cyan flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110 hover:rotate-6">
           <Database className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -188,7 +188,7 @@ function StatCell({
   highlight?: boolean;
 }) {
   return (
-    <div className="rounded-lg bg-slate-50 dark:bg-[rgba(11,20,48,0.65)] dark:border dark:border-[rgba(104,85,255,0.14)] py-2">
+    <div className="rounded-lg bg-slate-50 dark:bg-[rgb(var(--skin-navy-rgb)/0.65)] dark:border dark:border-[rgb(var(--skin-accent)/0.14)] py-2">
       <p className={`text-lg font-bold ${highlight ? 'text-primary-600 dark:text-primary-400' : 'text-slate-900 dark:text-white'}`}>
         {value}
       </p>

@@ -156,12 +156,12 @@ function StatCard({
       className="dark-card neon-border-flow p-6"
     >
       <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-lg ${color} dark:shadow-[0_0_20px_-4px_rgba(104,85,255,0.8)] ${glow}`}>
+        <div className={`p-3 rounded-lg ${color} dark:shadow-[0_0_20px_-4px_rgb(var(--skin-accent)/0.8)] ${glow}`}>
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div>
           <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="text-2xl font-bold text-slate-800 dark:text-white dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.35)]">
+          <p className="text-2xl font-bold text-slate-800 dark:text-white dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.35)]">
             {value}{suffix && <span className="text-base font-normal text-slate-400 dark:text-slate-500 ml-1">{suffix}</span>}
           </p>
         </div>
@@ -502,7 +502,7 @@ export default function InterviewHistoryPage({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Users className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.8)]" />
+            <Users className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.8)]" />
             {isKnowledgeBaseView ? '知识库面试记录' : '面试记录'}
           </motion.h1>
           <motion.p
@@ -516,7 +516,7 @@ export default function InterviewHistoryPage({
         </div>
 
         <motion.div
-          className="flex items-center gap-3 bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md border border-slate-200 dark:border-[rgba(104,85,255,0.2)] rounded-xl px-4 py-2.5 min-w-[280px] focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:border-neon-purple/70 dark:focus-within:ring-neon-purple/20 dark:focus-within:shadow-[0_0_0_1px_rgba(104,85,255,0.4),0_0_24px_-8px_rgba(104,85,255,0.6)] transition-all"
+          className="flex items-center gap-3 bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] rounded-xl px-4 py-2.5 min-w-[280px] focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:border-neon-purple/70 dark:focus-within:ring-neon-purple/20 dark:focus-within:shadow-[0_0_0_1px_rgb(var(--skin-accent)/0.4),0_0_24px_-8px_rgb(var(--skin-accent)/0.6)] transition-all"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -534,9 +534,9 @@ export default function InterviewHistoryPage({
       {/* Stats */}
       {!loading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard icon={Users} label="面试总数" value={stats.totalCount} color="bg-primary-500" glow="dark:shadow-[0_0_20px_-4px_rgba(168,85,247,0.8)]" />
+          <StatCard icon={Users} label="面试总数" value={stats.totalCount} color="bg-primary-500" glow="dark:shadow-[0_0_20px_-4px_rgb(var(--skin-accent-4)/0.8)]" />
           <StatCard icon={CheckCircle} label="已完成" value={stats.completedCount} color="bg-emerald-500" glow="dark:shadow-[0_0_20px_-4px_rgba(0,214,160,0.8)]" />
-          <StatCard icon={TrendingUp} label="平均分数" value={stats.averageScore} suffix="分" color="bg-indigo-500" glow="dark:shadow-[0_0_20px_-4px_rgba(38,139,255,0.8)]" />
+          <StatCard icon={TrendingUp} label="平均分数" value={stats.averageScore} suffix="分" color="bg-indigo-500" glow="dark:shadow-[0_0_20px_-4px_rgb(var(--skin-accent-2)/0.8)]" />
         </div>
       )}
 
@@ -548,7 +548,7 @@ export default function InterviewHistoryPage({
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgba(0,217,255,0.7)]" />
+              <TrendingUp className="w-5 h-5 text-primary-500 dark:text-neon-cyan dark:drop-shadow-[0_0_8px_rgb(var(--skin-accent-3)/0.7)]" />
               <span className="font-semibold text-slate-800 dark:text-white">面试表现趋势</span>
             </div>
             <span className="text-sm text-slate-500 dark:text-slate-400">共 {trendData.length} 场练习</span>
@@ -563,10 +563,10 @@ export default function InterviewHistoryPage({
                 <Line
                   type="monotone"
                   dataKey="score"
-                  stroke="#6855ff"
+                  stroke="rgb(var(--skin-accent))"
                   strokeWidth={3}
-                  dot={{ fill: '#00d9ff', strokeWidth: 2, r: 5 }}
-                  activeDot={{ r: 8, fill: '#00d9ff' }}
+                  dot={{ fill: 'rgb(var(--skin-accent-3))', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 8, fill: 'rgb(var(--skin-accent-3))' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -640,8 +640,8 @@ export default function InterviewHistoryPage({
             onClick={() => setTypeFilter(tab.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               typeFilter === tab.key
-                ? 'bg-primary-500 text-white dark:bg-gradient-to-r dark:from-neon-purple dark:to-neon-blue dark:shadow-[0_0_18px_-6px_rgba(104,85,255,0.9)]'
-                : 'bg-white dark:bg-[rgba(25,39,82,0.4)] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[rgba(40,58,112,0.6)] border border-slate-200 dark:border-[rgba(104,85,255,0.2)]'
+                ? 'bg-primary-500 text-white dark:bg-gradient-to-r dark:from-neon-purple dark:to-neon-blue dark:shadow-[0_0_18px_-6px_rgb(var(--skin-accent)/0.9)]'
+                : 'bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.6)] border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)]'
             }`}
           >
             {tab.label}
@@ -700,7 +700,7 @@ export default function InterviewHistoryPage({
           transition={{ delay: 0.2 }}
         >
           <table className="w-full">
-            <thead className="bg-slate-50 dark:bg-[rgba(15,25,58,0.7)] border-b border-slate-100 dark:border-[rgba(104,85,255,0.14)]">
+            <thead className="bg-slate-50 dark:bg-[rgb(var(--skin-surface-deep)/0.7)] border-b border-slate-100 dark:border-[rgb(var(--skin-accent)/0.14)]">
               <tr>
                 <th className="text-left px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">类型</th>
                 <th className="text-left px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">名称</th>
@@ -720,7 +720,7 @@ export default function InterviewHistoryPage({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={() => handleRowClick(item)}
-                    className="border-b border-slate-50 dark:border-[rgba(104,85,255,0.1)] hover:bg-slate-50 dark:hover:bg-[rgba(40,58,112,0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgba(104,85,255,0.45)] cursor-pointer transition-all duration-300 group"
+                    className="border-b border-slate-50 dark:border-[rgb(var(--skin-accent)/0.1)] hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgb(var(--skin-accent)/0.45)] cursor-pointer transition-all duration-300 group"
                   >
                     <td className="px-6 py-4">
                       <TypeBadge item={item} />
@@ -758,9 +758,9 @@ export default function InterviewHistoryPage({
                     <td className="px-6 py-4">
                       {isEvaluateCompleted(item) && item.overallScore !== null ? (
                         <div className="flex items-center gap-3">
-                          <div className="w-16 h-2 bg-slate-100 dark:bg-[rgba(15,25,58,0.9)] rounded-full overflow-hidden dark:shadow-[inset_0_0_6px_rgba(3,8,30,0.9)]">
+                          <div className="w-16 h-2 bg-slate-100 dark:bg-[rgb(var(--skin-surface-deep)/0.9)] rounded-full overflow-hidden dark:shadow-[inset_0_0_6px_rgb(var(--skin-shadow)/0.9)]">
                             <motion.div
-                              className={`h-full ${getScoreProgressColor(item.overallScore)} dark:neon-progress rounded-full dark:shadow-[0_0_10px_rgba(38,139,255,0.8)]`}
+                              className={`h-full ${getScoreProgressColor(item.overallScore)} dark:neon-progress rounded-full dark:shadow-[0_0_10px_rgb(var(--skin-accent-2)/0.8)]`}
                               initial={{ width: 0 }}
                               animate={{ width: `${item.overallScore}%` }}
                               transition={{ duration: 0.8, delay: index * 0.05 }}

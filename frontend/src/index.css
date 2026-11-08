@@ -53,6 +53,175 @@
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
 }
 
+/* ============================================================
+ * 页面风格（Skin）Token
+ * ------------------------------------------------------------
+ * - 由 <html data-skin="..."> 切换，未设置时使用下面 :root 的默认值（aurora）
+ * - 覆盖 Tailwind v4 的主题变量，primary-* / neon-* 等工具类会立即换色
+ * - *-rgb 为「R G B」三元组，供 rgb(var(--x) / <alpha>) 携带透明度使用
+ * - 只改颜色，不改布局、字号与间距，避免切换时页面跳动
+ * ============================================================ */
+:root {
+  /* 强调色 */
+  --skin-accent: 104 85 255;
+  --skin-accent-2: 38 139 255;
+  --skin-accent-3: 0 217 255;
+  --skin-accent-4: 168 85 247;
+
+  /* 深色表面：卡片、侧边栏、悬浮态 */
+  --skin-surface: 25 39 82;
+  --skin-surface-deep: 15 25 58;
+  --skin-surface-hi: 40 58 112;
+  --skin-surface-active: 20 31 69;
+  --skin-navy-rgb: 11 20 48;
+  --skin-shadow: 3 8 30;
+
+  /* 整页底色 / 浅色模式渐变 */
+  --skin-bg: #070d20;
+  --skin-navy: #0b1430;
+  --skin-light-from: #f8fafc;
+  --skin-light-via: #ffffff;
+  --skin-light-to: #eef2ff;
+}
+
+/* 翡翠青瓷：青绿冷调 */
+html[data-skin='jade'] {
+  --color-primary-50: #eafbf4;
+  --color-primary-100: #cbf5e4;
+  --color-primary-200: #97e9cb;
+  --color-primary-300: #5bd6ac;
+  --color-primary-400: #25b98c;
+  --color-primary-500: #0b8f6c;
+  --color-primary-600: #0a7859;
+  --color-primary-700: #09634a;
+  --color-primary-800: #08513e;
+  --color-primary-900: #073f31;
+  --color-primary-950: #04241d;
+
+  --color-neon-purple: #2dd4bf;
+  --color-neon-blue: #38bdf8;
+  --color-neon-cyan: #7ef2d4;
+  --color-abyss: #051a18;
+  --color-navy: #08231f;
+
+  --color-slate-300: #a6c6bb;
+  --color-slate-400: #8bb0a4;
+  --color-slate-500: #6f9589;
+  --color-slate-600: #567a70;
+  --color-slate-700: #37574e;
+  --color-slate-800: rgba(13, 46, 42, 0.72);
+  --color-slate-900: rgba(6, 30, 27, 0.9);
+  --color-slate-950: #051a18;
+
+  --skin-accent: 11 143 108;
+  --skin-accent-2: 56 189 248;
+  --skin-accent-3: 126 242 212;
+  --skin-accent-4: 45 212 191;
+  --skin-surface: 14 46 42;
+  --skin-surface-deep: 9 32 29;
+  --skin-surface-hi: 26 68 61;
+  --skin-surface-active: 12 40 36;
+  --skin-navy-rgb: 8 35 31;
+  --skin-shadow: 2 14 12;
+  --skin-bg: #051a18;
+  --skin-navy: #08231f;
+  --skin-light-from: #f0faf6;
+  --skin-light-via: #ffffff;
+  --skin-light-to: #e6f7f0;
+}
+
+/* 暮光琥珀：暖橙低蓝光 */
+html[data-skin='ember'] {
+  --color-primary-50: #fff5ed;
+  --color-primary-100: #ffe7d4;
+  --color-primary-200: #fbc9a5;
+  --color-primary-300: #f5a670;
+  --color-primary-400: #e97c3f;
+  --color-primary-500: #c25727;
+  --color-primary-600: #a5471f;
+  --color-primary-700: #883b1c;
+  --color-primary-800: #70321b;
+  --color-primary-900: #5d2b19;
+  --color-primary-950: #331409;
+
+  --color-neon-purple: #f59e0b;
+  --color-neon-blue: #fb923c;
+  --color-neon-cyan: #fbbf24;
+  --color-abyss: #1a0f0b;
+  --color-navy: #241511;
+
+  --color-slate-300: #cbb6a6;
+  --color-slate-400: #b29c8c;
+  --color-slate-500: #957f70;
+  --color-slate-600: #7b665a;
+  --color-slate-700: #5d4238;
+  --color-slate-800: rgba(46, 29, 24, 0.72);
+  --color-slate-900: rgba(26, 15, 11, 0.9);
+  --color-slate-950: #1a0f0b;
+
+  --skin-accent: 194 87 39;
+  --skin-accent-2: 251 146 60;
+  --skin-accent-3: 251 191 36;
+  --skin-accent-4: 245 158 11;
+  --skin-surface: 47 30 26;
+  --skin-surface-deep: 33 20 17;
+  --skin-surface-hi: 73 45 36;
+  --skin-surface-active: 43 26 22;
+  --skin-navy-rgb: 36 21 17;
+  --skin-shadow: 22 11 6;
+  --skin-bg: #1a0f0b;
+  --skin-navy: #241511;
+  --skin-light-from: #fff7f1;
+  --skin-light-via: #ffffff;
+  --skin-light-to: #fdeee2;
+}
+
+/* 极简石墨：低饱和中性灰 */
+html[data-skin='graphite'] {
+  --color-primary-50: #f7f8fa;
+  --color-primary-100: #eceef2;
+  --color-primary-200: #d9dde4;
+  --color-primary-300: #bcc3ce;
+  --color-primary-400: #98a1b0;
+  --color-primary-500: #616d7f;
+  --color-primary-600: #4f5a6a;
+  --color-primary-700: #414a58;
+  --color-primary-800: #373e49;
+  --color-primary-900: #2d333c;
+  --color-primary-950: #1a1e24;
+
+  --color-neon-purple: #94a3b8;
+  --color-neon-blue: #cbd5e1;
+  --color-neon-cyan: #e2e8f0;
+  --color-abyss: #0e1218;
+  --color-navy: #151b23;
+
+  --color-slate-300: #b7bdc7;
+  --color-slate-400: #9aa2ad;
+  --color-slate-500: #7c8592;
+  --color-slate-600: #636c79;
+  --color-slate-700: #474e5a;
+  --color-slate-800: rgba(33, 39, 48, 0.72);
+  --color-slate-900: rgba(18, 22, 28, 0.9);
+  --color-slate-950: #0e1218;
+
+  --skin-accent: 97 109 127;
+  --skin-accent-2: 148 163 184;
+  --skin-accent-3: 203 213 225;
+  --skin-accent-4: 100 116 139;
+  --skin-surface: 33 39 48;
+  --skin-surface-deep: 22 27 34;
+  --skin-surface-hi: 52 60 73;
+  --skin-surface-active: 29 35 43;
+  --skin-navy-rgb: 21 27 35;
+  --skin-shadow: 8 11 15;
+  --skin-bg: #0e1218;
+  --skin-navy: #151b23;
+  --skin-light-from: #f6f7f9;
+  --skin-light-via: #ffffff;
+  --skin-light-to: #eef0f3;
+}
+
 /* 动态边框角度（用于 conic-gradient 流光边框） */
 @property --neon-angle {
   syntax: '<angle>';
@@ -69,14 +238,16 @@
   }
 
   html.dark {
-    background-color: #070d20;
+    background-color: var(--skin-bg);
     color-scheme: dark;
   }
 
   body {
     @apply antialiased;
     font-family: var(--font-sans);
-    @apply bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900;
+    /* 浅色背景渐变随风格变化，深色模式下由下方规则清除 */
+    background-image: linear-gradient(to bottom right, var(--skin-light-from), var(--skin-light-via), var(--skin-light-to));
+    @apply text-slate-900;
     @apply dark:bg-transparent dark:text-slate-50;
   }
 
@@ -95,11 +266,11 @@
     z-index: -2;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 55% 38% at 12% 2%, rgba(104, 85, 255, 0.30), transparent 62%),
-      radial-gradient(ellipse 48% 32% at 88% 8%, rgba(38, 139, 255, 0.24), transparent 65%),
-      radial-gradient(ellipse 42% 36% at 78% 92%, rgba(168, 85, 247, 0.20), transparent 60%),
-      radial-gradient(ellipse 38% 30% at 18% 96%, rgba(0, 217, 255, 0.14), transparent 65%),
-      radial-gradient(ellipse 60% 50% at 50% 50%, rgba(25, 39, 82, 0.55), transparent 75%);
+      radial-gradient(ellipse 55% 38% at 12% 2%, rgb(var(--skin-accent) / 0.30), transparent 62%),
+      radial-gradient(ellipse 48% 32% at 88% 8%, rgb(var(--skin-accent-2) / 0.24), transparent 65%),
+      radial-gradient(ellipse 42% 36% at 78% 92%, rgb(var(--skin-accent-4) / 0.20), transparent 60%),
+      radial-gradient(ellipse 38% 30% at 18% 96%, rgb(var(--skin-accent-3) / 0.14), transparent 65%),
+      radial-gradient(ellipse 60% 50% at 50% 50%, rgb(var(--skin-surface) / 0.55), transparent 75%);
     filter: blur(60px);
     animation: aurora-drift 20s ease-in-out infinite alternate;
     opacity: 0;
@@ -119,8 +290,8 @@
     z-index: -1;
     pointer-events: none;
     background-image:
-      radial-gradient(rgba(0, 217, 255, 0.45) 1px, transparent 1.6px),
-      radial-gradient(rgba(104, 85, 255, 0.35) 1px, transparent 1.6px);
+      radial-gradient(rgb(var(--skin-accent-3) / 0.45) 1px, transparent 1.6px),
+      radial-gradient(rgb(var(--skin-accent) / 0.35) 1px, transparent 1.6px);
     background-size: 30px 30px, 46px 46px;
     background-position: 0 0, 15px 23px;
     mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 82%);
@@ -167,8 +338,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 18px -6px rgba(104, 85, 255, 0.55); }
-  50%      { box-shadow: 0 0 32px -4px rgba(104, 85, 255, 0.85), 0 0 48px -8px rgba(0, 217, 255, 0.4); }
+  0%, 100% { box-shadow: 0 0 18px -6px rgb(var(--skin-accent) / 0.55); }
+  50%      { box-shadow: 0 0 32px -4px rgb(var(--skin-accent) / 0.85), 0 0 48px -8px rgb(var(--skin-accent-3) / 0.4); }
 }
 
 @keyframes spin-slow {
@@ -183,14 +354,14 @@
     .dark-card {
         @apply rounded-2xl border backdrop-blur-xl;
         @apply bg-white/85 border-slate-200/70 shadow-lg shadow-slate-200/50;
-        @apply dark:bg-[rgba(25,39,82,0.55)] dark:border-[rgba(104,85,255,0.18)] dark:shadow-[0_8px_40px_-12px_rgba(3,8,30,0.9)];
+        @apply dark:bg-[rgb(var(--skin-surface)_/_0.55)] dark:border-[rgb(var(--skin-accent)_/_0.18)] dark:shadow-[0_8px_40px_-12px_rgb(var(--skin-shadow)_/_0.9)];
     }
 
     /* 霓虹玻璃卡片：悬停浮动 + 渐变发光边框 + 底部光晕 */
     .neon-card {
         @apply relative rounded-2xl border backdrop-blur-xl;
         @apply bg-white/85 border-slate-200/70 shadow-lg shadow-slate-200/50;
-        @apply dark:bg-[rgba(25,39,82,0.55)] dark:border-[rgba(104,85,255,0.18)] dark:shadow-[0_8px_40px_-12px_rgba(3,8,30,0.9)];
+        @apply dark:bg-[rgb(var(--skin-surface)_/_0.55)] dark:border-[rgb(var(--skin-accent)_/_0.18)] dark:shadow-[0_8px_40px_-12px_rgb(var(--skin-shadow)_/_0.9)];
         transition:
             transform 0.3s var(--ease-neon),
             box-shadow 0.3s var(--ease-neon),
@@ -198,12 +369,12 @@
     }
     @media (hover: hover) {
         .neon-card:hover {
-            @apply dark:border-[rgba(104,85,255,0.55)];
+            @apply dark:border-[rgb(var(--skin-accent)_/_0.55)];
             transform: translateY(-6px) scale(1.01);
             box-shadow:
-                0 0 0 1px rgba(104, 85, 255, 0.25),
-                0 20px 50px -16px rgba(104, 85, 255, 0.5),
-                0 12px 40px -18px rgba(0, 217, 255, 0.35);
+                0 0 0 1px rgb(var(--skin-accent) / 0.25),
+                0 20px 50px -16px rgb(var(--skin-accent) / 0.5),
+                0 12px 40px -18px rgb(var(--skin-accent-3) / 0.35);
         }
         .neon-card:active {
             transform: translateY(-1px) scale(0.98);
@@ -223,11 +394,11 @@
         background: conic-gradient(
             from var(--neon-angle),
             transparent 0deg,
-            rgba(104, 85, 255, 0.9) 40deg,
-            rgba(0, 217, 255, 0.9) 80deg,
+            rgb(var(--skin-accent) / 0.9) 40deg,
+            rgb(var(--skin-accent-3) / 0.9) 80deg,
             transparent 120deg,
             transparent 180deg,
-            rgba(168, 85, 247, 0.7) 240deg,
+            rgb(var(--skin-accent-4) / 0.7) 240deg,
             transparent 300deg
         );
         -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -249,7 +420,7 @@
 
     /* 通用输入框 */
     .dark-input {
-        @apply bg-white/85 dark:bg-[rgba(15,25,58,0.6)] border border-slate-200 dark:border-[rgba(104,85,255,0.2)] text-slate-900 dark:text-slate-100;
+        @apply bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)_/_0.6)] border border-slate-200 dark:border-[rgb(var(--skin-accent)_/_0.2)] text-slate-900 dark:text-slate-100;
         @apply focus:ring-2 focus:ring-primary-500/25 focus:border-primary-500 dark:focus:ring-neon-purple/30 dark:focus:border-neon-purple/70;
         @apply transition-all duration-200;
     }
@@ -266,7 +437,7 @@
     /* 主按钮：紫蓝青渐变 + 光泽扫过 + 悬浮/按压 */
     .btn-primary {
         @apply relative overflow-hidden text-white font-medium;
-        background-image: linear-gradient(120deg, #a855f7 0%, #6855ff 45%, #268bff 100%);
+        background-image: linear-gradient(120deg, rgb(var(--skin-accent-4)) 0%, rgb(var(--skin-accent)) 45%, rgb(var(--skin-accent-2)) 100%);
         @apply shadow-lg shadow-primary-500/30;
         @apply transition-all duration-300 ease-neon;
         @apply hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary-500/45;
@@ -289,10 +460,10 @@
 
     /* 次要按钮：深蓝玻璃质感 */
     .btn-secondary {
-        @apply bg-slate-100 dark:bg-[rgba(25,39,82,0.5)] text-slate-700 dark:text-slate-200;
-        @apply hover:bg-slate-200 dark:hover:bg-[rgba(40,58,112,0.6)] dark:hover:border-[rgba(104,85,255,0.4)];
+        @apply bg-slate-100 dark:bg-[rgb(var(--skin-surface)_/_0.5)] text-slate-700 dark:text-slate-200;
+        @apply hover:bg-slate-200 dark:hover:bg-[rgb(var(--skin-surface-hi)_/_0.6)] dark:hover:border-[rgb(var(--skin-accent)_/_0.4)];
         @apply active:scale-[0.98];
-        @apply border border-slate-200 dark:border-[rgba(104,85,255,0.22)];
+        @apply border border-slate-200 dark:border-[rgb(var(--skin-accent)_/_0.22)];
         @apply backdrop-blur-md transition-all duration-200;
     }
 
@@ -308,22 +479,22 @@
 
 /* ---- @utility：支持 dark: 等变体的原子工具类（Tailwind v4） ---- */
 @utility neon-selected {
-    border-color: rgba(104, 85, 255, 0.65) !important;
-    background-image: linear-gradient(135deg, rgba(104, 85, 255, 0.22), rgba(38, 139, 255, 0.14) 55%, rgba(0, 217, 255, 0.08)) !important;
+    border-color: rgb(var(--skin-accent) / 0.65) !important;
+    background-image: linear-gradient(135deg, rgb(var(--skin-accent) / 0.22), rgb(var(--skin-accent-2) / 0.14) 55%, rgb(var(--skin-accent-3) / 0.08)) !important;
     box-shadow:
-        0 0 0 1px rgba(104, 85, 255, 0.35),
-        0 0 28px -8px rgba(104, 85, 255, 0.65),
-        inset 0 0 24px -12px rgba(0, 217, 255, 0.4) !important;
+        0 0 0 1px rgb(var(--skin-accent) / 0.35),
+        0 0 28px -8px rgb(var(--skin-accent) / 0.65),
+        inset 0 0 24px -12px rgb(var(--skin-accent-3) / 0.4) !important;
 }
 
 @utility neon-progress {
-    background-image: linear-gradient(90deg, #6855ff, #268bff, #00d9ff);
-    box-shadow: 0 0 12px -2px rgba(38, 139, 255, 0.7);
+    background-image: linear-gradient(90deg, rgb(var(--skin-accent)), rgb(var(--skin-accent-2)), rgb(var(--skin-accent-3)));
+    box-shadow: 0 0 12px -2px rgb(var(--skin-accent-2) / 0.7);
 }
 
 @utility neon-icon-box {
-    background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(104, 85, 255, 0.9) 50%, rgba(38, 139, 255, 0.9));
-    box-shadow: 0 0 18px -4px rgba(104, 85, 255, 0.75), inset 0 0 12px rgba(255, 255, 255, 0.15);
+    background-image: linear-gradient(135deg, rgb(var(--skin-accent-4) / 0.9), rgb(var(--skin-accent) / 0.9) 50%, rgb(var(--skin-accent-2) / 0.9));
+    box-shadow: 0 0 18px -4px rgb(var(--skin-accent) / 0.75), inset 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
 /* ============================================================
@@ -360,7 +531,7 @@
     border-radius: 4px;
   }
   .dark .scrollbar-thin::-webkit-scrollbar-track {
-    background: rgba(15, 25, 58, 0.6);
+    background: rgb(var(--skin-surface-deep) / 0.6);
   }
 
     .scrollbar-thin::-webkit-scrollbar-thumb {
@@ -371,10 +542,10 @@
     background: #94a3b8;
   }
   .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(104, 85, 255, 0.35);
+    background: rgb(var(--skin-accent) / 0.35);
   }
   .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(104, 85, 255, 0.55);
+    background: rgb(var(--skin-accent) / 0.55);
   }
 }
 

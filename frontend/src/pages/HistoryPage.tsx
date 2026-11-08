@@ -171,7 +171,7 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-            <FileStack className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgba(104,85,255,0.8)]" />
+            <FileStack className="w-7 h-7 text-primary-500 dark:drop-shadow-[0_0_10px_rgb(var(--skin-accent)/0.8)]" />
             简历管理
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">管理您的简历，AI 智能分析与评分</p>
@@ -205,7 +205,7 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
 
       {/* 搜索栏 */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 bg-white/85 dark:bg-[rgba(15,25,58,0.6)] backdrop-blur-md border border-slate-200 dark:border-[rgba(104,85,255,0.2)] rounded-xl px-4 py-3 max-w-md focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:border-neon-purple/70 dark:focus-within:ring-neon-purple/20 dark:focus-within:shadow-[0_0_0_1px_rgba(104,85,255,0.4),0_0_24px_-8px_rgba(104,85,255,0.6)] transition-all">
+        <div className="flex items-center gap-3 bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] backdrop-blur-md border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] rounded-xl px-4 py-3 max-w-md focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:border-neon-purple/70 dark:focus-within:ring-neon-purple/20 dark:focus-within:shadow-[0_0_0_1px_rgb(var(--skin-accent)/0.4),0_0_24px_-8px_rgb(var(--skin-accent)/0.6)] transition-all">
           <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none">
             <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -262,7 +262,7 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
         >
           <table className="w-full">
             <thead>
-            <tr className="bg-slate-50 dark:bg-[rgba(15,25,58,0.7)] border-b border-slate-100 dark:border-[rgba(104,85,255,0.14)]">
+            <tr className="bg-slate-50 dark:bg-[rgb(var(--skin-surface-deep)/0.7)] border-b border-slate-100 dark:border-[rgb(var(--skin-accent)/0.14)]">
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">简历名称</th>
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">上传日期</th>
               <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">分析状态</th>
@@ -280,12 +280,12 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
                   animate={{opacity: 1, x: 0}}
                   transition={{delay: index * 0.05}}
                   onClick={() => onSelectResume(resume.id)}
-                  className="border-b border-slate-100 dark:border-[rgba(104,85,255,0.1)] last:border-0 hover:bg-slate-50 dark:hover:bg-[rgba(40,58,112,0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgba(104,85,255,0.45)] cursor-pointer transition-all duration-300 group"
+                  className="border-b border-slate-100 dark:border-[rgb(var(--skin-accent)/0.1)] last:border-0 hover:bg-slate-50 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.45)] dark:hover:shadow-[inset_0_0_32px_-16px_rgb(var(--skin-accent)/0.45)] cursor-pointer transition-all duration-300 group"
                 >
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <div
-                        className="w-10 h-10 bg-primary-50 dark:bg-gradient-to-br dark:from-neon-purple/30 dark:to-neon-blue/25 dark:shadow-[0_0_16px_-4px_rgba(104,85,255,0.8)] rounded-xl flex items-center justify-center text-primary-500 dark:text-neon-cyan transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                        className="w-10 h-10 bg-primary-50 dark:bg-gradient-to-br dark:from-neon-purple/30 dark:to-neon-blue/25 dark:shadow-[0_0_16px_-4px_rgb(var(--skin-accent)/0.8)] rounded-xl flex items-center justify-center text-primary-500 dark:text-neon-cyan transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
                           <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round"
@@ -310,9 +310,9 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
                     {resume.analyzeStatus === 'COMPLETED' && resume.latestScore !== undefined ? (
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-20 h-2 bg-slate-100 dark:bg-[rgba(15,25,58,0.9)] rounded-full overflow-hidden dark:shadow-[inset_0_0_6px_rgba(3,8,30,0.9)]">
+                          className="w-20 h-2 bg-slate-100 dark:bg-[rgb(var(--skin-surface-deep)/0.9)] rounded-full overflow-hidden dark:shadow-[inset_0_0_6px_rgb(var(--skin-shadow)/0.9)]">
                           <motion.div
-                            className={`h-full ${getScoreProgressColor(resume.latestScore)} dark:neon-progress rounded-full dark:shadow-[0_0_10px_rgba(38,139,255,0.8)]`}
+                            className={`h-full ${getScoreProgressColor(resume.latestScore)} dark:neon-progress rounded-full dark:shadow-[0_0_10px_rgb(var(--skin-accent-2)/0.8)]`}
                             initial={{width: 0}}
                             animate={{width: `${resume.latestScore}%`}}
                             transition={{duration: 0.8, delay: index * 0.05}}
@@ -342,7 +342,7 @@ export default function HistoryList({onSelectResume}: HistoryListProps) {
                       </span>
                     ) : (
                       <span
-                        className="inline-flex px-3 py-1 bg-slate-100 dark:bg-[rgba(25,39,82,0.6)] dark:border dark:border-[rgba(104,85,255,0.2)] text-slate-500 dark:text-slate-300 rounded-full text-sm">待面试</span>
+                        className="inline-flex px-3 py-1 bg-slate-100 dark:bg-[rgb(var(--skin-surface)/0.6)] dark:border dark:border-[rgb(var(--skin-accent)/0.2)] text-slate-500 dark:text-slate-300 rounded-full text-sm">待面试</span>
                     )}
                   </td>
                   <td className="px-4">
