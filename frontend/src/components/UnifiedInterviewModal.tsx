@@ -109,7 +109,7 @@ export default function UnifiedInterviewModal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="dark-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:shadow-[0_0_60px_-16px_rgba(104,85,255,0.5)]"
+              className="dark-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:shadow-[0_0_60px_-16px_rgb(var(--skin-accent)/0.5)]"
             >
               {/* Header */}
               <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
@@ -169,7 +169,7 @@ export default function UnifiedInterviewModal({
                             className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left
                               ${selected
                                 ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                                : 'border-slate-200 dark:border-[rgba(104,85,255,0.2)] bg-white dark:bg-[rgba(25,39,82,0.4)] hover:border-slate-300 dark:hover:border-[rgba(104,85,255,0.5)]'
+                                : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] hover:border-slate-300 dark:hover:border-[rgb(var(--skin-accent)/0.5)]'
                               }`}
                           >
                             <Icon className={`w-5 h-5 flex-shrink-0 ${selected ? 'text-primary-500' : 'text-slate-400'}`} />
@@ -214,7 +214,7 @@ export default function UnifiedInterviewModal({
                             className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left
                               ${selected
                                 ? 'border-primary-500 bg-primary-50/80 dark:bg-primary-900/20 dark:neon-selected'
-                                : 'border-slate-200 dark:border-[rgba(104,85,255,0.2)] bg-white dark:bg-[rgba(25,39,82,0.4)] hover:border-slate-300 dark:hover:border-[rgba(104,85,255,0.5)]'
+                                : 'border-slate-200 dark:border-[rgb(var(--skin-accent)/0.2)] bg-white dark:bg-[rgb(var(--skin-surface)/0.4)] hover:border-slate-300 dark:hover:border-[rgb(var(--skin-accent)/0.5)]'
                               }`}
                           >
                             <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0 ${
@@ -398,8 +398,8 @@ export default function UnifiedInterviewModal({
                                 onClick={() => config.setQuestionCount(n)}
                                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all
                                   ${config.questionCount === n
-                                    ? 'bg-primary-500 text-white shadow-sm dark:shadow-[0_0_16px_-4px_rgba(104,85,255,0.9)]'
-                                    : 'bg-slate-100 dark:bg-[rgba(25,39,82,0.5)] dark:border dark:border-[rgba(104,85,255,0.18)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgba(40,58,112,0.6)]'
+                                    ? 'bg-primary-500 text-white shadow-sm dark:shadow-[0_0_16px_-4px_rgb(var(--skin-accent)/0.9)]'
+                                    : 'bg-slate-100 dark:bg-[rgb(var(--skin-surface)/0.5)] dark:border dark:border-[rgb(var(--skin-accent)/0.18)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[rgb(var(--skin-surface-hi)/0.6)]'
                                   }`}
                               >
                                 {n} 题

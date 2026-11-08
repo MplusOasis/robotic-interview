@@ -30,8 +30,8 @@ export const GENERATE_COUNT_OPTIONS = [3, 5, 10, 15];
 export const CATEGORY_LIMIT_OPTIONS = [1, 2, 3, 5];
 
 export const INPUT_CLASS =
-  'w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-[rgba(104,85,255,0.25)] '
-  + 'bg-white/85 dark:bg-[rgba(15,25,58,0.6)] dark:backdrop-blur-md text-sm text-slate-900 dark:text-white '
+  'w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-[rgb(var(--skin-accent)/0.25)] '
+  + 'bg-white/85 dark:bg-[rgb(var(--skin-surface-deep)/0.6)] dark:backdrop-blur-md text-sm text-slate-900 dark:text-white '
   + 'focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-neon-purple/30 focus:border-primary-500 dark:focus:border-neon-purple/60 transition-all';
 
 export const DEFAULT_DIFFICULTY = 'mid';
